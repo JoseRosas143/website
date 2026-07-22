@@ -37,6 +37,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="insurance-spotlight"><div className="section-shell"><div><span>J R Seguros</span><h2>Protege el camino que ya construiste.</h2><p>Te ayudamos a comparar y cotizar seguros de auto con atención clara, cercana y humana.</p><Link className="button button--light" href="/seguros">Cotizar mi seguro <ArrowRight size={18} /></Link></div><ul><li>Quálitas</li><li>MAPFRE</li><li>Afirme</li><li>Chubb</li><li>HDI</li></ul></div></section>
+
       <section className="websites-feature section-pad">
         <div className="website-grid section-shell">
           <div className="website-copy">
@@ -86,6 +88,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <section className="home-story section-pad"><div className="section-shell"><div><span className="label">Nuestra historia</span><h2>El crecimiento se vuelve posible cuando alguien te ayuda a ver el siguiente paso.</h2></div><div><p>J R Consulting existe para acercar estrategia, tecnología y educación a quienes están construyendo algo importante. Trabajamos con cercanía, claridad y el compromiso de dejar capacidades reales, no sólo entregables.</p><Link className="text-link" href="/nosotros">Conoce nuestra historia <ArrowRight /></Link></div></div></section>
 
       <section className="ecosystem-cta"><h2>Cuéntanos qué quieres construir.</h2><Link className="button button--light" href="/contacto">Agenda una conversación <ArrowRight size={18} /></Link></section>
     </>

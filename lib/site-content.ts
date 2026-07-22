@@ -1,95 +1,98 @@
-export type EditablePage = {
+export type EditablePage = { title: string; description: string; primaryCta: string; secondaryCta: string };
+
+export type CmsBlock = {
+  id: string;
+  type: "hero" | "insurance" | "services" | "story" | "ecosystem" | "cta" | "rich-text";
   title: string;
-  description: string;
-  primaryCta: string;
-  secondaryCta: string;
+  body: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  enabled: boolean;
 };
 
-export type SiteContent = {
-  home: EditablePage;
-  aprende: EditablePage;
-  research: EditablePage;
-  ramx: EditablePage;
-  contact: {
-    phone: string;
-    whatsapp: string;
-  };
+export type BlogPost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  body: string;
+  category: string;
+  published: boolean;
+  publishedAt: string;
 };
+
+export type KnowledgeItem = { id: string; question: string; answer: string; topic: string };
+
+export type ManagedPage = EditablePage & { blocks: CmsBlock[] };
+export type PageKey = "home" | "soluciones" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros";
+
+export type SiteContent = {
+  home: ManagedPage;
+  aprende: ManagedPage;
+  research: ManagedPage;
+  ramx: ManagedPage;
+  pages: Record<Exclude<PageKey, "home" | "aprende" | "research" | "ramx">, ManagedPage>;
+  blog: BlogPost[];
+  knowledge: KnowledgeItem[];
+  contact: { phone: string; whatsapp: string };
+};
+
+const standardBlocks = (items: Array<[CmsBlock["type"], string, string]>) => items.map(([type, title, body], index) => ({ id: `${type}-${index + 1}`, type, title, body, enabled: true }));
 
 export const defaultContent: SiteContent = {
   home: {
     title: "Estrategia, tecnología y conocimiento para crecer con dirección.",
-    description:
-      "Diseñamos e implementamos soluciones que ordenan tu negocio, mejoran tu presencia digital y convierten ideas en sistemas que sí funcionan.",
-    primaryCta: "Hablemos de tu proyecto",
-    secondaryCta: "Explorar soluciones"
+    description: "Diseñamos e implementamos soluciones que ordenan tu negocio, mejoran tu presencia digital y convierten ideas en sistemas que sí funcionan.",
+    primaryCta: "Hablemos de tu proyecto", secondaryCta: "Explorar soluciones",
+    blocks: standardBlocks([
+      ["hero", "Estrategia que se convierte en avance", "Unimos claridad, tecnología y ejecución para que las buenas ideas se conviertan en negocios más fuertes."],
+      ["insurance", "Seguros que sí responden", "Protegemos tus vehículos y lo que has construido con atención cercana y opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI."],
+      ["services", "Soluciones con propósito", "Consultoría, IA, websites, capacitación y servicios profesionales para construir capacidades reales."],
+      ["story", "Nuestra historia", "J R Consulting nace de una convicción sencilla: el crecimiento debe ser accesible, humano y aplicable, no una promesa lejana."],
+      ["ecosystem", "Un ecosistema para avanzar", "J R Aprende, J R Research, RAMX y próximamente J R OS conectan conocimiento, tecnología y acción."],
+      ["cta", "Hablemos de lo que sigue", "Cuéntanos en qué punto estás y diseñemos una ruta que tenga sentido para ti."],
+    ])
   },
-  aprende: {
-    title: "Aprender para abrir oportunidades reales.",
-    description:
-      "Rutas prácticas para desarrollar habilidades digitales, avanzar hacia certificaciones reconocidas y aplicar lo aprendido desde el primer proyecto.",
-    primaryCta: "Explorar rutas",
-    secondaryCta: "Capacitación para equipos"
+  aprende: { title: "Aprender para abrir oportunidades reales.", description: "Rutas prácticas para desarrollar habilidades digitales, avanzar hacia certificaciones reconocidas y aplicar lo aprendido desde el primer proyecto.", primaryCta: "Explorar rutas", secondaryCta: "Capacitación para equipos", blocks: standardBlocks([["hero", "Aprender para avanzar", "Capacitación útil, acompañamiento y evidencia de lo que sabes hacer."]]) },
+  research: { title: "Protocolos claros, viables y defendibles.", description: "Acompañamiento metodológico para transformar una pregunta clínica en un protocolo congruente, ético y listo para revisión.", primaryCta: "Revisar mi protocolo", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Investigación que se sostiene", "Orden metodológico para llevar una idea clínica a un protocolo viable."]]) },
+  ramx: { title: "Identidad digital que ayuda a proteger a cada mascota.", description: "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.", primaryCta: "Conocer RAMX", secondaryCta: "Solicitar información", blocks: standardBlocks([["hero", "Una identidad que acompaña", "Tecnología para proteger la historia de cada mascota."]]) },
+  pages: {
+    soluciones: { title: "Soluciones que hacen que tu negocio avance.", description: "Estrategia, presencia digital y sistemas para convertir el trabajo diario en progreso medible.", primaryCta: "Hablar de mi negocio", secondaryCta: "Ver servicios", blocks: standardBlocks([["services", "Soluciones estratégicas", "Construimos sistemas claros para crecer con dirección."]]) },
+    websites: { title: "Websites que explican, atraen y convierten.", description: "Diseño y desarrollo pensado para hacer visible el valor de tu negocio.", primaryCta: "Cotizar mi website", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Tu sitio trabaja contigo", "No es un folleto: es una herramienta para explicar, atraer y convertir."]]) },
+    seguros: { title: "Protección cercana para lo que más importa.", description: "Cotizamos seguros de auto con acompañamiento humano para tomar decisiones claras.", primaryCta: "Cotizar mi seguro", secondaryCta: "Hablar por WhatsApp", blocks: standardBlocks([["insurance", "Seguros que sí responden", "Opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI para proteger tu camino."]]) },
+    nosotros: { title: "Crecemos contigo, no desde lejos.", description: "Somos una firma que une consultoría, tecnología, educación y acompañamiento para hacer posible el siguiente paso.", primaryCta: "Conocer nuestras soluciones", secondaryCta: "Hablemos", blocks: standardBlocks([["story", "Nuestra historia", "J R Consulting nació para acercar herramientas, método y acompañamiento a quienes están construyendo algo importante."], ["rich-text", "Nuestros valores", "Escuchamos antes de proponer. Hacemos lo complejo entendible. Cumplimos con cercanía y construimos soluciones que dejan capacidad instalada."]]) }
   },
-  research: {
-    title: "Protocolos claros, viables y defendibles.",
-    description:
-      "Acompañamiento metodológico para transformar una pregunta clínica en un protocolo congruente, ético y listo para revisión.",
-    primaryCta: "Revisar mi protocolo",
-    secondaryCta: "Conocer el proceso"
-  },
-  ramx: {
-    title: "Identidad digital que ayuda a proteger a cada mascota.",
-    description:
-      "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.",
-    primaryCta: "Conocer RAMX",
-    secondaryCta: "Solicitar información"
-  },
-  contact: {
-    phone: "2213759147",
-    whatsapp: "522213759147"
-  }
+  blog: [],
+  knowledge: [
+    { id: "jr-general", topic: "J R Consulting", question: "¿Qué hace J R Consulting?", answer: "J R Consulting acompaña a emprendedores, profesionistas y pequeñas empresas con estrategia, tecnología, IA, websites, capacitación y soluciones digitales." },
+    { id: "jr-insurance", topic: "Seguros", question: "¿Qué seguros manejan?", answer: "Podemos orientar y cotizar seguros de auto con Quálitas, MAPFRE, Afirme, Chubb y HDI. El siguiente paso es solicitar una cotización." },
+    { id: "jr-contact", topic: "Contacto", question: "¿Cómo puedo hablar con el equipo?", answer: "Puedes solicitar una cita desde el sitio o escribir por WhatsApp al 221 375 9147." }
+  ],
+  contact: { phone: "2213759147", whatsapp: "522213759147" }
 };
 
-export const editablePageLabels: Record<keyof Omit<SiteContent, "contact">, string> = {
-  home: "Inicio",
-  aprende: "J R Aprende",
-  research: "J R Research",
-  ramx: "RAMX"
-};
+export const editablePageLabels: Record<PageKey, string> = { home: "Inicio", soluciones: "Soluciones", websites: "Websites", seguros: "Seguros", aprende: "J R Aprende", research: "J R Research", ramx: "RAMX", nosotros: "Nosotros / Acerca de" };
+
+function mergePage(base: ManagedPage, value: unknown): ManagedPage {
+  if (!value || typeof value !== "object") return base;
+  const candidate = value as Partial<ManagedPage>;
+  return { ...base, ...candidate, blocks: Array.isArray(candidate.blocks) ? candidate.blocks : base.blocks };
+}
 
 export function mergeSiteContent(value: unknown): SiteContent {
   if (!value || typeof value !== "object") return defaultContent;
   const incoming = value as Partial<SiteContent>;
   return {
-    home: { ...defaultContent.home, ...incoming.home },
-    aprende: { ...defaultContent.aprende, ...incoming.aprende },
-    research: { ...defaultContent.research, ...incoming.research },
-    ramx: { ...defaultContent.ramx, ...incoming.ramx },
+    home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: mergePage(defaultContent.research, incoming.research), ramx: mergePage(defaultContent.ramx, incoming.ramx),
+    pages: {
+      soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones), websites: mergePage(defaultContent.pages.websites, incoming.pages?.websites), seguros: mergePage(defaultContent.pages.seguros, incoming.pages?.seguros), nosotros: mergePage(defaultContent.pages.nosotros, incoming.pages?.nosotros)
+    },
+    blog: Array.isArray(incoming.blog) ? incoming.blog : defaultContent.blog,
+    knowledge: Array.isArray(incoming.knowledge) ? incoming.knowledge : defaultContent.knowledge,
     contact: { ...defaultContent.contact, ...incoming.contact }
   };
 }
 
-export const serviceOptions = [
-  "Estrategia y crecimiento",
-  "Soluciones tecnológicas e IA",
-  "Website y presencia digital",
-  "J R Aprende — capacitación",
-  "J R Research — protocolo",
-  "RAMX",
-  "Seguros",
-  "Otro"
-] as const;
-
-export type Lead = {
-  id?: string;
-  name: string;
-  email: string;
-  phone: string;
-  company?: string;
-  service: string;
-  message: string;
-  status?: "nuevo" | "en_revision" | "contactado" | "cerrado";
-  source?: string;
-  created_at?: string;
-};
+export function pageFor(content: SiteContent, key: PageKey): ManagedPage { return key in content.pages ? content.pages[key as keyof typeof content.pages] : content[key as "home" | "aprende" | "research" | "ramx"]; }
+export const serviceOptions = ["Estrategia y crecimiento", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
+export type Lead = { id?: string; name: string; email: string; phone: string; company?: string; service: string; message: string; status?: "nuevo" | "en_revision" | "contactado" | "cerrado"; source?: string; created_at?: string; };

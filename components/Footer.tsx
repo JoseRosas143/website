@@ -28,6 +28,8 @@ const groups = [
     title: "Información",
     links: [
       ["Contacto", "/contacto"],
+      ["Nosotros", "/nosotros"],
+      ["Blog", "/blog"],
       ["Aviso de privacidad", "/aviso-de-privacidad"],
       ["Términos", "/terminos"],
       ["Administración", "/admin"]
