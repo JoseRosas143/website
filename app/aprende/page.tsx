@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Bot, BriefcaseBusiness, Code2, FileCheck2, Info, Map, Pencil, Search, Target, Wrench, Workflow } from "lucide-react";
 import { LearningRoutes } from "@/components/LearningRoutes";
+import { CalendarButton } from "@/components/CalendarButton";
 import { QuoteForm } from "@/components/QuoteForm";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteContent } from "@/lib/storage";
@@ -19,6 +20,8 @@ const steps = [
   [FileCheck2, "Evidencia", "Documentas resultados reales."],
   [Target, "Siguiente paso", "Avanzas con una decisión clara."]
 ] as const;
+
+const aprendeCalendar = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1lAe8HOMTXagBUdFssmbSgVF9PWXGLRKNp15AQd-Kah0In3wgvmIQnGBXAZOhWMpzQ66Y55NXJ?gv=true";
 
 export default async function AprendePage() {
   const content = await getSiteContent();
@@ -53,7 +56,7 @@ export default async function AprendePage() {
 
       <section className="section-pad soft-section" id="formulario-aprende">
         <div className="learn-form-grid section-shell">
-          <div><span className="label">Tu siguiente ruta</span><h2>Cuéntanos qué quieres aprender y para qué.</h2><p className="section-intro">Recomendaremos una ruta realista para ti o para tu equipo, con énfasis en aplicación práctica.</p><Link className="text-link" href="/contacto#agenda">También puedes agendar una conversación <ArrowRight /></Link></div>
+          <div><span className="label">Tu siguiente ruta</span><h2>Cuéntanos qué quieres aprender y para qué.</h2><p className="section-intro">Recomendaremos una ruta realista para ti o para tu equipo, con énfasis en aplicación práctica.</p><CalendarButton url={aprendeCalendar} color="#039BE5" label="Programar una cita" /><Link className="text-link" href="/contacto#agenda">Ver otras opciones de contacto <ArrowRight /></Link></div>
           <QuoteForm defaultService="J R Aprende — capacitación" source="aprende" />
         </div>
       </section>

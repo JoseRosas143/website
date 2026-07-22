@@ -33,7 +33,15 @@ const loaded = new Promise<void>((resolve) => {
   document.head.appendChild(script);
 });
 
-export function CalendarButton({ url, label = "Programar una cita" }: { url: string; label?: string }) {
+export function CalendarButton({
+  url,
+  label = "Programar una cita",
+  color = "#0AAFB0"
+}: {
+  url: string;
+  label?: string;
+  color?: string;
+}) {
   const target = useRef<HTMLDivElement>(null);
   const [fallback, setFallback] = useState(false);
 
@@ -43,14 +51,14 @@ export function CalendarButton({ url, label = "Programar una cita" }: { url: str
     loaded.then(() => {
       if (!active || !target.current || !window.calendar) return;
       target.current.innerHTML = "";
-      window.calendar.schedulingButton.load({ url, color: "#0AAFB0", label, target: target.current });
+      window.calendar.schedulingButton.load({ url, color, label, target: target.current });
       window.clearTimeout(timeout);
     });
     return () => {
       active = false;
       window.clearTimeout(timeout);
     };
-  }, [label, url]);
+  }, [color, label, url]);
 
   return (
     <div className="calendar-button-wrap" ref={target}>
