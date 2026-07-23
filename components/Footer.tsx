@@ -10,6 +10,7 @@ const groups = [
     title: "Consulting",
     links: [
       ["Soluciones", "/soluciones"],
+      ["Google Workspace", "/google-workspace"],
       ["Websites", "/websites"],
       ["Seguros", "/seguros"],
       ["Cotizar", "/cotizar"]

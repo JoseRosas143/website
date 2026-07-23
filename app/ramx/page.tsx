@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BellRing, HeartPulse, MapPin, PawPrint, QrCode, Radio, ShieldCheck, Smartphone } from "lucide-react";
 import { CalendarButton } from "@/components/CalendarButton";
+import { CmsAdditionalBlocks } from "@/components/CmsAdditionalBlocks";
 import { QuoteForm } from "@/components/QuoteForm";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteContent } from "@/lib/storage";
@@ -29,6 +30,7 @@ export default async function RamxPage() {
       ].map(([Icon, title, copy]) => { const C = Icon as typeof QrCode; return <article key={title as string}><C /><h3>{title as string}</h3><p>{copy as string}</p></article>; })}</div></div></section>
       <section className="dark-band section-pad"><div className="split-section section-shell"><h2>Del registro gratuito a un ecosistema de protección.</h2><div><p className="section-intro">RAMX inicia con identidad digital, perfiles, alertas y expediente básico. La red veterinaria ampliará el ecosistema en una siguiente etapa sin prometer funciones que todavía están en desarrollo.</p><a className="button button--light" href="https://ramx.bonica.com.mx/tienda/order" target="_blank" rel="noreferrer">Conocer productos RAMX <ArrowRight size={18} /></a></div></div></section>
       <section className="section-pad soft-section" id="ramx-contacto"><div className="learn-form-grid section-shell"><div><span className="label">RAMX</span><h2>¿Quieres registrar, distribuir o colaborar?</h2><p className="section-intro">Cuéntanos si eres tutor, veterinaria, asociación, distribuidor o aliado potencial.</p><CalendarButton url={ramxCalendar} color="#E67C73" label="Programar una cita" /><Link className="text-link" href="https://wa.me/522213759147?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20RAMX" target="_blank">También puedes escribir por WhatsApp <ArrowRight size={18} /></Link></div><QuoteForm defaultService="RAMX" source="ramx" /></div></section>
+      <CmsAdditionalBlocks blocks={content.ramx.blocks} pageKey="ramx" />
     </>
   );
 }

@@ -12,7 +12,7 @@ export async function PATCH(request: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   try {
     const content = mergeSiteContent(await request.json());
-    for (const page of [content.home, content.aprende, content.research, content.ramx]) {
+    for (const page of [content.home, content.aprende, content.research, content.ramx, ...Object.values(content.pages)]) {
       if (!page.title.trim() || !page.description.trim() || !page.primaryCta.trim()) return NextResponse.json({ error: "Los campos principales no pueden quedar vacíos." }, { status: 400 });
     }
     const result = await saveSiteContent(content);

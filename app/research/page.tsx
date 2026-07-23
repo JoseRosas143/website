@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpenCheck, FileSearch, Microscope, Scale, ShieldCheck, Waypoints } from "lucide-react";
 import { QuoteForm } from "@/components/QuoteForm";
+import { CmsAdditionalBlocks } from "@/components/CmsAdditionalBlocks";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteContent } from "@/lib/storage";
 
@@ -25,6 +26,7 @@ export default async function ResearchPage() {
       ].map(([Icon, title, copy], index) => { const C = Icon as typeof FileSearch; return <article key={title as string}><span>0{index + 1}</span><C /><h3>{title as string}</h3><p>{copy as string}</p></article>; })}</div></div></section>
       <section className="dark-band section-pad"><div className="split-section section-shell"><h2>Rigor sin perder claridad.</h2><div><p className="section-intro">El acompañamiento fortalece la estructura y congruencia del protocolo. Las decisiones clínicas, autoría, aprobación institucional, integridad de los datos y defensa del trabajo permanecen bajo responsabilidad del equipo investigador.</p><div className="research-scope">{["Protocolos clínicos", "Tesis y trabajos académicos", "Tablas de variables", "Instrumentos y anexos", "Revisión de congruencia", "Formato Vancouver"].map((item) => <span key={item}>{item}</span>)}</div></div></div></section>
       <section className="section-pad soft-section" id="research-form"><div className="learn-form-grid section-shell"><div><span className="label">Revisión inicial</span><h2>Cuéntanos en qué etapa está tu protocolo.</h2><p className="section-intro">Describe el tema, institución, especialidad, avance actual y fecha límite. Te diremos con claridad qué podemos trabajar.</p><Link className="text-link" href="/contacto#agenda">Prefiero agendar una conversación <ArrowRight /></Link></div><QuoteForm defaultService="J R Research — protocolo" source="research" /></div></section>
+      <CmsAdditionalBlocks blocks={content.research.blocks} pageKey="research" />
     </>
   );
 }

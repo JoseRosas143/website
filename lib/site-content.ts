@@ -108,10 +108,38 @@ export const editablePageLabels: Record<PageKey, string> = {
   contacto: "Contacto"
 };
 
+const blockTypes = new Set<CmsBlock["type"]>(["hero", "insurance", "services", "story", "ecosystem", "benefits", "process", "referral", "implementation", "legal", "cta", "rich-text"]);
+
+function normalizeBlocks(value: unknown, fallback: CmsBlock[]): CmsBlock[] {
+  if (!Array.isArray(value)) return fallback;
+  return value.flatMap((item, index) => {
+    if (!item || typeof item !== "object") return [];
+    const block = item as Partial<CmsBlock>;
+    if (!block.type || !blockTypes.has(block.type)) return [];
+    return [{
+      id: typeof block.id === "string" && block.id ? block.id : `${block.type}-restored-${index + 1}`,
+      type: block.type,
+      title: typeof block.title === "string" ? block.title : "Bloque sin título",
+      body: typeof block.body === "string" ? block.body : "",
+      ctaLabel: typeof block.ctaLabel === "string" ? block.ctaLabel : "",
+      ctaHref: typeof block.ctaHref === "string" ? block.ctaHref : "",
+      mediaUrl: typeof block.mediaUrl === "string" ? block.mediaUrl : "",
+      enabled: block.enabled !== false
+    }];
+  });
+}
+
 function mergePage(base: ManagedPage, value: unknown): ManagedPage {
   if (!value || typeof value !== "object") return base;
   const candidate = value as Partial<ManagedPage>;
-  return { ...base, ...candidate, blocks: Array.isArray(candidate.blocks) ? candidate.blocks : base.blocks };
+  return {
+    ...base,
+    title: typeof candidate.title === "string" ? candidate.title : base.title,
+    description: typeof candidate.description === "string" ? candidate.description : base.description,
+    primaryCta: typeof candidate.primaryCta === "string" ? candidate.primaryCta : base.primaryCta,
+    secondaryCta: typeof candidate.secondaryCta === "string" ? candidate.secondaryCta : base.secondaryCta,
+    blocks: normalizeBlocks(candidate.blocks, base.blocks)
+  };
 }
 
 export function mergeSiteContent(value: unknown): SiteContent {

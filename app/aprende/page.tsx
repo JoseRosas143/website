@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, Bot, BriefcaseBusiness, Code2, FileCheck2, Info, Map, Pencil, Search, Target, Wrench, Workflow } from "lucide-react";
 import { LearningRoutes } from "@/components/LearningRoutes";
 import { CalendarButton } from "@/components/CalendarButton";
+import { CmsAdditionalBlocks } from "@/components/CmsAdditionalBlocks";
 import { QuoteForm } from "@/components/QuoteForm";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteContent } from "@/lib/storage";
@@ -60,6 +61,7 @@ export default async function AprendePage() {
           <QuoteForm defaultService="J R Aprende — capacitación" source="aprende" />
         </div>
       </section>
+      <CmsAdditionalBlocks blocks={content.aprende.blocks} pageKey="aprende" />
     </>
   );
 }

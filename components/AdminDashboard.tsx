@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import {
   ArrowDown,
@@ -8,24 +9,34 @@ import {
   BookOpen,
   Check,
   ChevronRight,
+  Copy,
   ExternalLink,
+  Eye,
+  EyeOff,
   FileText,
   GripVertical,
   Home,
   Image as ImageIcon,
+  Layers3,
   LayoutDashboard,
   LogOut,
   MessageSquareText,
+  Monitor,
+  MousePointer2,
   Plus,
+  Redo2,
   Save,
   Search,
   Settings,
   Sparkles,
+  Smartphone,
+  Tablet,
   Trash2,
+  Undo2,
   Upload,
   Users
 } from "lucide-react";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 import {
   BlogPost,
@@ -39,6 +50,8 @@ import {
 } from "@/lib/site-content";
 
 type Section = "summary" | "pages" | "blog" | "knowledge" | "leads" | "settings";
+type Device = "desktop" | "tablet" | "mobile";
+type BuilderTab = "blocks" | "layers";
 
 const blockIcons: Record<CmsBlock["type"], typeof Sparkles> = {
   hero: Sparkles,
@@ -84,10 +97,18 @@ const blockTemplates: Array<{ type: CmsBlock["type"]; label: string; description
 
 export function AdminDashboard({ initialContent, initialLeads }: { initialContent: SiteContent; initialLeads: Lead[] }) {
   const [content, setContent] = useState(initialContent);
+  const contentRef = useRef(initialContent);
+  const [undoStack, setUndoStack] = useState<SiteContent[]>([]);
+  const [redoStack, setRedoStack] = useState<SiteContent[]>([]);
+  const [dirty, setDirty] = useState(false);
   const [selected, setSelected] = useState<PageKey>("home");
   const [section, setSection] = useState<Section>("summary");
   const [blockIndex, setBlockIndex] = useState(0);
-  const [showLibrary, setShowLibrary] = useState(false);
+  const [builderTab, setBuilderTab] = useState<BuilderTab>("blocks");
+  const [blockQuery, setBlockQuery] = useState("");
+  const [device, setDevice] = useState<Device>("desktop");
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
   const [selectedPostId, setSelectedPostId] = useState(content.blog[0]?.id || "");
   const [selectedKnowledgeId, setSelectedKnowledgeId] = useState(content.knowledge[0]?.id || "");
   const [knowledgeQuery, setKnowledgeQuery] = useState("");
@@ -105,23 +126,64 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
     if (!query) return content.knowledge;
     return content.knowledge.filter((item) => `${item.topic} ${item.question} ${item.answer}`.toLowerCase().includes(query));
   }, [content.knowledge, knowledgeQuery]);
+  const filteredTemplates = useMemo(() => {
+    const query = blockQuery.trim().toLowerCase();
+    if (!query) return blockTemplates;
+    return blockTemplates.filter((template) => `${template.label} ${template.description}`.toLowerCase().includes(query));
+  }, [blockQuery]);
+
+  function applyContent(update: SiteContent | ((current: SiteContent) => SiteContent)) {
+    const current = contentRef.current;
+    const next = typeof update === "function" ? update(current) : update;
+    if (next === current) return;
+    setUndoStack((stack) => [...stack.slice(-39), current]);
+    setRedoStack([]);
+    contentRef.current = next;
+    setContent(next);
+    setDirty(true);
+    setNotice("");
+  }
+
+  function undo() {
+    const previous = undoStack.at(-1);
+    if (!previous) return;
+    const current = contentRef.current;
+    setRedoStack((stack) => [current, ...stack].slice(0, 40));
+    setUndoStack((stack) => stack.slice(0, -1));
+    contentRef.current = previous;
+    setContent(previous);
+    setDirty(true);
+    setBlockIndex((index) => Math.min(index, Math.max(0, pageFor(previous, selected).blocks.length - 1)));
+  }
+
+  function redo() {
+    const next = redoStack[0];
+    if (!next) return;
+    const current = contentRef.current;
+    setUndoStack((stack) => [...stack, current].slice(-40));
+    setRedoStack((stack) => stack.slice(1));
+    contentRef.current = next;
+    setContent(next);
+    setDirty(true);
+    setBlockIndex((index) => Math.min(index, Math.max(0, pageFor(next, selected).blocks.length - 1)));
+  }
 
   function updatePage(field: "title" | "description" | "primaryCta" | "secondaryCta", value: string) {
-    setContent((current) => updateSelectedPage(current, selected, { [field]: value }));
+    applyContent((current) => updateSelectedPage(current, selected, { [field]: value }));
     setNotice("");
   }
 
   function updateBlock(field: keyof CmsBlock, value: string | boolean) {
     if (!block) return;
-    setContent((current) => updateSelectedPage(current, selected, {
+    applyContent((current) => updateSelectedPage(current, selected, {
       blocks: page.blocks.map((item, index) => index === blockIndex ? { ...item, [field]: value } : item)
     }));
     setNotice("");
   }
 
-  function addBlock(type: CmsBlock["type"]) {
+  function createBlock(type: CmsBlock["type"]): CmsBlock {
     const template = blockTemplates.find((item) => item.type === type);
-    const next: CmsBlock = {
+    return {
       id: `${type}-${selected}-${crypto.randomUUID()}`,
       type,
       title: template?.label || "Nuevo bloque",
@@ -131,9 +193,14 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
       mediaUrl: "",
       enabled: true
     };
-    setContent((current) => updateSelectedPage(current, selected, { blocks: [...page.blocks, next] }));
-    setBlockIndex(page.blocks.length);
-    setShowLibrary(false);
+  }
+
+  function addBlock(type: CmsBlock["type"], atIndex = page.blocks.length) {
+    const next = createBlock(type);
+    const blocks = [...page.blocks];
+    blocks.splice(atIndex, 0, next);
+    applyContent((current) => updateSelectedPage(current, selected, { blocks }));
+    setBlockIndex(atIndex);
   }
 
   function moveBlock(direction: -1 | 1) {
@@ -141,14 +208,46 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
     if (nextIndex < 0 || nextIndex >= page.blocks.length) return;
     const blocks = [...page.blocks];
     [blocks[blockIndex], blocks[nextIndex]] = [blocks[nextIndex], blocks[blockIndex]];
-    setContent((current) => updateSelectedPage(current, selected, { blocks }));
+    applyContent((current) => updateSelectedPage(current, selected, { blocks }));
     setBlockIndex(nextIndex);
   }
 
   function deleteBlock() {
     if (!block || page.blocks.length === 1) return;
-    setContent((current) => updateSelectedPage(current, selected, { blocks: page.blocks.filter((_, index) => index !== blockIndex) }));
+    applyContent((current) => updateSelectedPage(current, selected, { blocks: page.blocks.filter((_, index) => index !== blockIndex) }));
     setBlockIndex(Math.max(0, blockIndex - 1));
+  }
+
+  function duplicateBlock() {
+    if (!block) return;
+    const next = { ...block, id: `${block.type}-${selected}-${crypto.randomUUID()}`, title: `${block.title} (copia)` };
+    const blocks = [...page.blocks];
+    blocks.splice(blockIndex + 1, 0, next);
+    applyContent((current) => updateSelectedPage(current, selected, { blocks }));
+    setBlockIndex(blockIndex + 1);
+  }
+
+  function reorderBlock(source: number, target: number) {
+    if (source < 0 || source >= page.blocks.length || target < 0 || target > page.blocks.length) return;
+    const blocks = [...page.blocks];
+    const [moved] = blocks.splice(source, 1);
+    const adjustedTarget = target > source ? target - 1 : target;
+    if (adjustedTarget === source) return;
+    blocks.splice(adjustedTarget, 0, moved);
+    applyContent((current) => updateSelectedPage(current, selected, { blocks }));
+    setBlockIndex(adjustedTarget);
+  }
+
+  function handleDrop(event: React.DragEvent, targetIndex: number) {
+    event.preventDefault();
+    const payload = event.dataTransfer.getData("text/plain");
+    if (payload.startsWith("template:")) {
+      addBlock(payload.replace("template:", "") as CmsBlock["type"], targetIndex);
+    } else if (draggedIndex !== null) {
+      reorderBlock(draggedIndex, targetIndex);
+    }
+    setDraggedIndex(null);
+    setDropIndex(null);
   }
 
   function addPost() {
@@ -164,12 +263,12 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
       published: false,
       publishedAt: new Date().toISOString()
     };
-    setContent((current) => ({ ...current, blog: [post, ...current.blog] }));
+    applyContent((current) => ({ ...current, blog: [post, ...current.blog] }));
     setSelectedPostId(id);
   }
 
   function updatePost(id: string, field: keyof BlogPost, value: string | boolean) {
-    setContent((current) => ({
+    applyContent((current) => ({
       ...current,
       blog: current.blog.map((post) => post.id === id ? { ...post, [field]: value } : post)
     }));
@@ -184,12 +283,12 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
       answer: "Redacta la respuesta aprobada que el agente debe utilizar.",
       updatedAt: new Date().toISOString()
     };
-    setContent((current) => ({ ...current, knowledge: [item, ...current.knowledge] }));
+    applyContent((current) => ({ ...current, knowledge: [item, ...current.knowledge] }));
     setSelectedKnowledgeId(id);
   }
 
   function updateKnowledge(id: string, field: keyof KnowledgeItem, value: string) {
-    setContent((current) => ({
+    applyContent((current) => ({
       ...current,
       knowledge: current.knowledge.map((item) => item.id === id ? { ...item, [field]: value, updatedAt: new Date().toISOString() } : item)
     }));
@@ -232,7 +331,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
         sourceName: file.name,
         updatedAt: new Date().toISOString()
       };
-      setContent((current) => ({ ...current, knowledge: [item, ...current.knowledge] }));
+      applyContent((current) => ({ ...current, knowledge: [item, ...current.knowledge] }));
       setSelectedKnowledgeId(id);
       setNotice("Documento importado. Revisa el contenido y publica los cambios.");
     } catch (error) {
@@ -253,6 +352,11 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
         body: JSON.stringify(content)
       });
       const data = await response.json();
+      if (response.ok) {
+        setDirty(false);
+        setUndoStack([]);
+        setRedoStack([]);
+      }
       setNotice(response.ok ? `Cambios publicados${data.storage === "local" ? " en modo local" : ""}.` : data.error || "No fue posible guardar.");
     } catch {
       setNotice("No se pudo conectar con el servidor.");
@@ -293,7 +397,30 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
 
       <main className="cms-main">
         <header className="cms-header">
-          <div><h1>{sectionTitle[0]}</h1><p>{sectionTitle[1]}</p></div>
+          <div>
+            <h1>{sectionTitle[0]}</h1>
+            <p>{section === "pages" ? `Sitio web / ${editablePageLabels[selected]}` : sectionTitle[1]}</p>
+          </div>
+          {section === "pages" && (
+            <div className="cms-editor-commandbar" aria-label="Herramientas del editor">
+              <label>
+                <span className="sr-only">Página actual</span>
+                <select value={selected} onChange={(event) => { setSelected(event.target.value as PageKey); setBlockIndex(0); setBuilderTab("blocks"); }}>
+                  {Object.entries(editablePageLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+                </select>
+              </label>
+              <div className="cms-history-actions">
+                <button onClick={undo} disabled={!undoStack.length} aria-label="Deshacer" title="Deshacer"><Undo2 /></button>
+                <button onClick={redo} disabled={!redoStack.length} aria-label="Rehacer" title="Rehacer"><Redo2 /></button>
+              </div>
+              <div className="cms-device-actions" aria-label="Vista adaptable">
+                <button className={device === "desktop" ? "is-active" : ""} onClick={() => setDevice("desktop")} aria-label="Vista de escritorio"><Monitor /></button>
+                <button className={device === "tablet" ? "is-active" : ""} onClick={() => setDevice("tablet")} aria-label="Vista de tableta"><Tablet /></button>
+                <button className={device === "mobile" ? "is-active" : ""} onClick={() => setDevice("mobile")} aria-label="Vista móvil"><Smartphone /></button>
+              </div>
+              <span className={`cms-save-state${dirty ? " is-dirty" : ""}`}>{dirty ? "Cambios sin publicar" : "Cambios guardados"}</span>
+            </div>
+          )}
           <div className="cms-header-actions">
             <a className="button button--outline" href={section === "pages" ? pageRoutes[selected] : section === "blog" ? "/blog" : "/"} target="_blank" rel="noreferrer">Ver sitio <ExternalLink size={16} /></a>
             {section !== "leads" && <button className="button button--primary" onClick={save} disabled={saving}><Save size={16} />{saving ? "Publicando…" : "Publicar cambios"}</button>}
@@ -315,41 +442,89 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
         )}
 
         {section === "pages" && (
-          <section className="cms-page-workspace">
-            <div className="cms-page-rail">
-              <div className="cms-panel-heading"><div><h2>Páginas del sitio</h2><p>Selecciona una para editarla.</p></div></div>
-              <div className="cms-page-list">
-                {Object.entries(editablePageLabels).map(([key, label]) => (
-                  <button key={key} className={selected === key ? "is-selected" : ""} onClick={() => { setSelected(key as PageKey); setBlockIndex(0); setShowLibrary(false); }}>
-                    <GripVertical size={15} /><span>{label}</span><ChevronRight size={16} />
-                  </button>
-                ))}
+          <section className="cms-builder">
+            <aside className="cms-builder-library">
+              <div className="cms-builder-tabs">
+                <button className={builderTab === "blocks" ? "is-active" : ""} onClick={() => setBuilderTab("blocks")}><Plus />Agregar</button>
+                <button className={builderTab === "layers" ? "is-active" : ""} onClick={() => setBuilderTab("layers")}><Layers3 />Capas</button>
               </div>
-            </div>
-
-            <div className="cms-canvas">
-              <div className="cms-canvas-title"><div><h2>{editablePageLabels[selected]}</h2><span>Publicada</span></div><a href={pageRoutes[selected]} target="_blank" rel="noreferrer">Abrir página <ExternalLink size={14} /></a></div>
-              <div className="cms-page-fields">
-                <label>Título de la página<input value={page.title} onChange={(event) => updatePage("title", event.target.value)} /></label>
-                <label>Descripción (SEO y presentación)<textarea rows={3} value={page.description} onChange={(event) => updatePage("description", event.target.value)} /></label>
-                <div className="cms-two-fields">
-                  <label>Acción principal<input value={page.primaryCta} onChange={(event) => updatePage("primaryCta", event.target.value)} /></label>
-                  <label>Acción secundaria<input value={page.secondaryCta} onChange={(event) => updatePage("secondaryCta", event.target.value)} /></label>
+              {builderTab === "blocks" ? (
+                <>
+                  <label className="cms-block-search"><Search /><input value={blockQuery} onChange={(event) => setBlockQuery(event.target.value)} placeholder="Buscar bloques" /></label>
+                  <div className="cms-template-list">
+                    {filteredTemplates.map((template) => {
+                      const Icon = blockIcons[template.type];
+                      return (
+                        <button
+                          key={template.type}
+                          draggable
+                          onDragStart={(event) => event.dataTransfer.setData("text/plain", `template:${template.type}`)}
+                          onClick={() => addBlock(template.type, blockIndex + 1)}
+                        >
+                          <Icon /><span><strong>{template.label}</strong><small>{template.description}</small></span><GripVertical />
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="cms-drop-hint"><MousePointer2 /><p><strong>Arrastra un bloque al lienzo</strong><span>o haz clic para insertarlo después del bloque seleccionado.</span></p></div>
+                </>
+              ) : (
+                <div className="cms-layer-list">
+                  {page.blocks.map((item, index) => {
+                    const Icon = blockIcons[item.type];
+                    return (
+                      <button key={item.id} className={index === blockIndex ? "is-selected" : ""} onClick={() => setBlockIndex(index)}>
+                        <GripVertical /><Icon /><span><strong>{item.title || blockLabel(item.type)}</strong><small>{blockLabel(item.type)}</small></span>{item.enabled ? <Eye /> : <EyeOff />}
+                      </button>
+                    );
+                  })}
                 </div>
+              )}
+            </aside>
+
+            <div className="cms-builder-stage">
+              <div className="cms-stage-bar">
+                <div><strong>{editablePageLabels[selected]}</strong><span>{page.blocks.filter((item) => item.enabled).length} bloques visibles</span></div>
+                <a href={pageRoutes[selected]} target="_blank" rel="noreferrer">Abrir página <ExternalLink /></a>
               </div>
-              <div className="cms-block-heading"><div><h2>Bloques de la página</h2><p>Selecciona un bloque para editarlo.</p></div><button onClick={() => setShowLibrary((value) => !value)}><Plus size={16} />Agregar bloque</button></div>
-              {showLibrary && <div className="cms-block-library">{blockTemplates.map((template) => { const Icon = blockIcons[template.type]; return <button key={template.type} onClick={() => addBlock(template.type)}><Icon /><span><strong>{template.label}</strong><small>{template.description}</small></span></button>; })}</div>}
-              <div className="cms-block-list">
-                {page.blocks.map((item, index) => {
-                  const Icon = blockIcons[item.type];
-                  return <button key={item.id} className={index === blockIndex ? "is-selected" : ""} onClick={() => setBlockIndex(index)}><GripVertical className="cms-drag" /><Icon className="cms-block-type-icon" /><span><strong>{item.title}</strong><small>{blockLabel(item.type)} · {item.enabled ? "Visible" : "Oculto"}</small></span><i className={item.enabled ? "is-visible" : ""} aria-label={item.enabled ? "Visible" : "Oculto"} /></button>;
-                })}
+              <div className={`cms-pasteboard is-${device}`}>
+                <div className="cms-page-preview">
+                  <div className="cms-preview-nav"><Logo /><span>Soluciones</span><span>Servicios</span><span>Nosotros</span><i>Hablemos</i></div>
+                  <PreviewDropZone active={dropIndex === 0} onDragOver={(event) => { event.preventDefault(); setDropIndex(0); }} onDrop={(event) => handleDrop(event, 0)} />
+                  {page.blocks.map((item, index) => (
+                    <div key={item.id}>
+                      <PreviewBlock
+                        block={item}
+                        selected={index === blockIndex}
+                        page={page}
+                        device={device}
+                        draggable
+                        onClick={() => setBlockIndex(index)}
+                        onDragStart={(event) => { setDraggedIndex(index); event.dataTransfer.setData("text/plain", `block:${index}`); }}
+                        onDragEnd={() => { setDraggedIndex(null); setDropIndex(null); }}
+                        onDuplicate={duplicateBlock}
+                        onToggle={() => updateBlock("enabled", !item.enabled)}
+                      />
+                      <PreviewDropZone active={dropIndex === index + 1} onDragOver={(event) => { event.preventDefault(); setDropIndex(index + 1); }} onDrop={(event) => handleDrop(event, index + 1)} />
+                    </div>
+                  ))}
+                  {!page.blocks.length && <div className="cms-empty-canvas"><Plus /><strong>Agrega tu primer bloque</strong><span>Arrástralo desde la biblioteca.</span></div>}
+                </div>
               </div>
             </div>
 
             <aside className="cms-inspector">
               {block && <>
-                <div className="cms-inspector-heading"><div><h2>{blockLabel(block.type)}</h2><p>Bloque seleccionado</p></div><span>{blockIndex + 1}/{page.blocks.length}</span></div>
+                <div className="cms-inspector-heading"><div><h2>Contenido del bloque</h2><p>{blockLabel(block.type)} seleccionado</p></div><span>{blockIndex + 1}/{page.blocks.length}</span></div>
+                <details className="cms-page-settings">
+                  <summary>Configuración de la página <ChevronRight /></summary>
+                  <label>Título de la página<input value={page.title} onChange={(event) => updatePage("title", event.target.value)} /></label>
+                  <label>Descripción SEO<textarea rows={3} value={page.description} onChange={(event) => updatePage("description", event.target.value)} /></label>
+                  <div className="cms-two-fields">
+                    <label>Acción principal<input value={page.primaryCta} onChange={(event) => updatePage("primaryCta", event.target.value)} /></label>
+                    <label>Acción secundaria<input value={page.secondaryCta} onChange={(event) => updatePage("secondaryCta", event.target.value)} /></label>
+                  </div>
+                </details>
                 <label>Tipo de bloque<select value={block.type} onChange={(event) => updateBlock("type", event.target.value)}>{blockTemplates.map((template) => <option key={template.type} value={template.type}>{template.label}</option>)}</select></label>
                 <label>Título<input value={block.title} onChange={(event) => updateBlock("title", event.target.value)} /></label>
                 <label>Contenido<textarea rows={8} value={block.body} onChange={(event) => updateBlock("body", event.target.value)} /></label>
@@ -366,6 +541,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
                 </label>
                 <label className="cms-toggle"><input type="checkbox" checked={block.enabled} onChange={(event) => updateBlock("enabled", event.target.checked)} /><span><strong>Mostrar bloque</strong><small>Visible en el sitio público</small></span></label>
                 <div className="cms-block-actions"><button onClick={() => moveBlock(-1)} disabled={blockIndex === 0}><ArrowUp />Subir</button><button onClick={() => moveBlock(1)} disabled={blockIndex === page.blocks.length - 1}><ArrowDown />Bajar</button></div>
+                <button className="cms-duplicate-wide" onClick={duplicateBlock}><Copy />Duplicar bloque</button>
                 <button className="cms-delete-wide" onClick={deleteBlock} disabled={page.blocks.length === 1}><Trash2 />Eliminar bloque</button>
               </>}
             </aside>
@@ -381,7 +557,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
             </div>
             <div className="cms-editor-surface">
               {selectedPost ? <>
-                <div className="cms-editor-title"><div><span>{selectedPost.published ? "Publicado" : "Borrador"}</span><h2>{selectedPost.title}</h2></div><button className="cms-delete" onClick={() => { setContent((current) => ({ ...current, blog: current.blog.filter((item) => item.id !== selectedPost.id) })); setSelectedPostId(""); }}><Trash2 />Eliminar</button></div>
+                <div className="cms-editor-title"><div><span>{selectedPost.published ? "Publicado" : "Borrador"}</span><h2>{selectedPost.title}</h2></div><button className="cms-delete" onClick={() => { applyContent((current) => ({ ...current, blog: current.blog.filter((item) => item.id !== selectedPost.id) })); setSelectedPostId(""); }}><Trash2 />Eliminar</button></div>
                 <div className="cms-two-fields"><label>Título<input value={selectedPost.title} onChange={(event) => updatePost(selectedPost.id, "title", event.target.value)} /></label><label>URL / slug<input value={selectedPost.slug} onChange={(event) => updatePost(selectedPost.id, "slug", slugify(event.target.value))} /></label></div>
                 <label>Resumen<textarea rows={3} value={selectedPost.excerpt} onChange={(event) => updatePost(selectedPost.id, "excerpt", event.target.value)} /></label>
                 <label>Contenido del artículo<textarea className="cms-article-editor" rows={18} value={selectedPost.body} onChange={(event) => updatePost(selectedPost.id, "body", event.target.value)} /></label>
@@ -403,7 +579,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
             </div>
             <div className="cms-editor-surface">
               {selectedKnowledge ? <>
-                <div className="cms-editor-title"><div><span>Respuesta aprobada</span><h2>{selectedKnowledge.question}</h2></div><button className="cms-delete" onClick={() => { setContent((current) => ({ ...current, knowledge: current.knowledge.filter((item) => item.id !== selectedKnowledge.id) })); setSelectedKnowledgeId(""); }}><Trash2 />Eliminar</button></div>
+                <div className="cms-editor-title"><div><span>Respuesta aprobada</span><h2>{selectedKnowledge.question}</h2></div><button className="cms-delete" onClick={() => { applyContent((current) => ({ ...current, knowledge: current.knowledge.filter((item) => item.id !== selectedKnowledge.id) })); setSelectedKnowledgeId(""); }}><Trash2 />Eliminar</button></div>
                 {selectedKnowledge.sourceName && <div className="cms-source"><FileText /><div><strong>{selectedKnowledge.sourceName}</strong><small>Contenido importado y disponible para el agente</small></div></div>}
                 <label>Tema<input value={selectedKnowledge.topic} onChange={(event) => updateKnowledge(selectedKnowledge.id, "topic", event.target.value)} /></label>
                 <label>Pregunta, intención o título<input value={selectedKnowledge.question} onChange={(event) => updateKnowledge(selectedKnowledge.id, "question", event.target.value)} /></label>
@@ -424,11 +600,80 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
         {section === "settings" && (
           <section className="cms-settings">
             <div><h2>Datos de contacto</h2><p>Se utilizan en formularios, botones de WhatsApp y respuestas del asistente.</p></div>
-            <div className="cms-settings-form"><label>Teléfono visible<input value={content.contact.phone} onChange={(event) => setContent((current) => ({ ...current, contact: { ...current.contact, phone: event.target.value } }))} /></label><label>Número para WhatsApp<input value={content.contact.whatsapp} onChange={(event) => setContent((current) => ({ ...current, contact: { ...current.contact, whatsapp: event.target.value } }))} /></label></div>
+            <div className="cms-settings-form"><label>Teléfono visible<input value={content.contact.phone} onChange={(event) => applyContent((current) => ({ ...current, contact: { ...current.contact, phone: event.target.value } }))} /></label><label>Número para WhatsApp<input value={content.contact.whatsapp} onChange={(event) => applyContent((current) => ({ ...current, contact: { ...current.contact, whatsapp: event.target.value } }))} /></label></div>
           </section>
         )}
       </main>
     </div>
+  );
+}
+
+function PreviewDropZone({ active, onDragOver, onDrop }: { active: boolean; onDragOver: (event: React.DragEvent<HTMLDivElement>) => void; onDrop: (event: React.DragEvent<HTMLDivElement>) => void }) {
+  return <div className={`cms-preview-dropzone${active ? " is-active" : ""}`} onDragOver={onDragOver} onDrop={onDrop}><span><Plus />Soltar bloque aquí</span></div>;
+}
+
+function PreviewBlock({
+  block,
+  selected,
+  page,
+  device,
+  onClick,
+  onDragStart,
+  onDragEnd,
+  onDuplicate,
+  onToggle
+}: {
+  block: CmsBlock;
+  selected: boolean;
+  page: ReturnType<typeof pageFor>;
+  device: Device;
+  draggable: boolean;
+  onClick: () => void;
+  onDragStart: (event: React.DragEvent<HTMLElement>) => void;
+  onDragEnd: () => void;
+  onDuplicate: () => void;
+  onToggle: () => void;
+}) {
+  const Icon = blockIcons[block.type];
+  const isHero = block.type === "hero";
+  return (
+    <section
+      className={`cms-preview-block cms-preview-block--${block.type}${selected ? " is-selected" : ""}${block.enabled ? "" : " is-hidden"}`}
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onClick={onClick}
+      tabIndex={0}
+      onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onClick(); }}
+      aria-label={`Editar bloque ${block.title}`}
+    >
+      {selected && (
+        <div className="cms-floating-tools" onClick={(event) => event.stopPropagation()}>
+          <span><GripVertical />Mover</span>
+          <button onClick={onDuplicate} aria-label="Duplicar bloque"><Copy /></button>
+          <button onClick={onToggle} aria-label={block.enabled ? "Ocultar bloque" : "Mostrar bloque"}>{block.enabled ? <Eye /> : <EyeOff />}</button>
+        </div>
+      )}
+      {isHero ? (
+        <div className="cms-preview-hero">
+          <div>
+            <small>{block.title || "Encabezado principal"}</small>
+            <h2>{page.title}</h2>
+            <p>{page.description}</p>
+            <div><span>{page.primaryCta}</span><i>{page.secondaryCta}</i></div>
+          </div>
+          <div className="cms-preview-media">
+            {block.mediaUrl ? <img src={block.mediaUrl} alt="" /> : <><Icon /><span>Imagen o recurso visual</span></>}
+          </div>
+        </div>
+      ) : (
+        <div className="cms-preview-section">
+          <Icon />
+          <div><small>{blockLabel(block.type)}</small><h3>{block.title}</h3><p>{block.body}</p>{block.ctaLabel && <span>{block.ctaLabel} →</span>}</div>
+          {block.mediaUrl && device !== "mobile" && <img src={block.mediaUrl} alt="" />}
+        </div>
+      )}
+    </section>
   );
 }
 

@@ -8,12 +8,13 @@ import { Logo } from "@/components/Logo";
 
 const links = [
   { href: "/soluciones", label: "Soluciones" },
+  { href: "/google-workspace", label: "Google Workspace" },
   { href: "/seguros", label: "Seguros" },
   { href: "/websites", label: "Websites" },
   { href: "/aprende", label: "J R Aprende" },
   { href: "/research", label: "J R Research" },
-  { href: "/ramx", label: "RAMX" }
-  ,{ href: "/nosotros", label: "Nosotros" }
+  { href: "/ramx", label: "RAMX" },
+  { href: "/nosotros", label: "Nosotros" }
 ];
 
 export function Nav() {
