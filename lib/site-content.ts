@@ -2,11 +2,12 @@ export type EditablePage = { title: string; description: string; primaryCta: str
 
 export type CmsBlock = {
   id: string;
-  type: "hero" | "insurance" | "services" | "story" | "ecosystem" | "cta" | "rich-text";
+  type: "hero" | "insurance" | "services" | "story" | "ecosystem" | "benefits" | "process" | "referral" | "implementation" | "legal" | "cta" | "rich-text";
   title: string;
   body: string;
   ctaLabel?: string;
   ctaHref?: string;
+  mediaUrl?: string;
   enabled: boolean;
 };
 
@@ -17,14 +18,22 @@ export type BlogPost = {
   excerpt: string;
   body: string;
   category: string;
+  imageUrl?: string;
   published: boolean;
   publishedAt: string;
 };
 
-export type KnowledgeItem = { id: string; question: string; answer: string; topic: string };
+export type KnowledgeItem = {
+  id: string;
+  question: string;
+  answer: string;
+  topic: string;
+  sourceName?: string;
+  updatedAt?: string;
+};
 
 export type ManagedPage = EditablePage & { blocks: CmsBlock[] };
-export type PageKey = "home" | "soluciones" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros";
+export type PageKey = "home" | "soluciones" | "workspace" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros" | "contacto";
 
 export type SiteContent = {
   home: ManagedPage;
@@ -58,9 +67,24 @@ export const defaultContent: SiteContent = {
   ramx: { title: "Identidad digital que ayuda a proteger a cada mascota.", description: "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.", primaryCta: "Conocer RAMX", secondaryCta: "Solicitar información", blocks: standardBlocks([["hero", "Una identidad que acompaña", "Tecnología para proteger la historia de cada mascota."]]) },
   pages: {
     soluciones: { title: "Soluciones que hacen que tu negocio avance.", description: "Estrategia, presencia digital y sistemas para convertir el trabajo diario en progreso medible.", primaryCta: "Hablar de mi negocio", secondaryCta: "Ver servicios", blocks: standardBlocks([["services", "Soluciones estratégicas", "Construimos sistemas claros para crecer con dirección."]]) },
+    workspace: {
+      title: "Google Workspace para empresas",
+      description: "Correo profesional, colaboración y administración para que tu equipo trabaje mejor, con acompañamiento independiente de J R Consulting.",
+      primaryCta: "Contratar directamente con Google",
+      secondaryCta: "Solicitar asesoría",
+      blocks: standardBlocks([
+        ["hero", "Google Workspace para empresas", "Correo profesional, colaboración y administración para que tu equipo trabaje mejor, con acompañamiento independiente de J R Consulting."],
+        ["benefits", "Todo lo que tu equipo necesita para trabajar mejor", "Correo empresarial con tu dominio, acceso desde cualquier lugar y herramientas de administración de nivel empresarial."],
+        ["process", "Así trabajamos contigo", "Solicita asesoría, recibe individualmente tu código promocional, contrata directamente con Google y recibe acompañamiento de implementación."],
+        ["referral", "Prueba Google Workspace", "Inicia una prueba de 14 días con el vínculo de referencia de J R Consulting o escríbenos si deseas recibir un descuento exclusivo durante tu prueba."],
+        ["implementation", "Implementación independiente, a tu medida", "Configuración, migración, seguridad, capacitación y adopción se cotizan por separado según las necesidades de tu empresa."],
+        ["legal", "Declaración de independencia", "J R Consulting es una firma de consultoría independiente y participa en el Programa de Referencias de Google Workspace. Google Workspace es contratado, proporcionado y facturado directamente por Google. Google y Google Workspace son marcas de Google LLC."]
+      ])
+    },
     websites: { title: "Websites que explican, atraen y convierten.", description: "Diseño y desarrollo pensado para hacer visible el valor de tu negocio.", primaryCta: "Cotizar mi website", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Tu sitio trabaja contigo", "No es un folleto: es una herramienta para explicar, atraer y convertir."]]) },
     seguros: { title: "Protección cercana para lo que más importa.", description: "Cotizamos seguros de auto con acompañamiento humano para tomar decisiones claras.", primaryCta: "Cotizar mi seguro", secondaryCta: "Hablar por WhatsApp", blocks: standardBlocks([["insurance", "Seguros que sí responden", "Opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI para proteger tu camino."]]) },
-    nosotros: { title: "Crecemos contigo, no desde lejos.", description: "Somos una firma que une consultoría, tecnología, educación y acompañamiento para hacer posible el siguiente paso.", primaryCta: "Conocer nuestras soluciones", secondaryCta: "Hablemos", blocks: standardBlocks([["story", "Nuestra historia", "J R Consulting nació para acercar herramientas, método y acompañamiento a quienes están construyendo algo importante."], ["rich-text", "Nuestros valores", "Escuchamos antes de proponer. Hacemos lo complejo entendible. Cumplimos con cercanía y construimos soluciones que dejan capacidad instalada."]]) }
+    nosotros: { title: "Crecemos contigo, no desde lejos.", description: "Somos una firma que une consultoría, tecnología, educación y acompañamiento para hacer posible el siguiente paso.", primaryCta: "Conocer nuestras soluciones", secondaryCta: "Hablemos", blocks: standardBlocks([["story", "Nuestra historia", "J R Consulting nació para acercar herramientas, método y acompañamiento a quienes están construyendo algo importante."], ["rich-text", "Nuestros valores", "Escuchamos antes de proponer. Hacemos lo complejo entendible. Cumplimos con cercanía y construimos soluciones que dejan capacidad instalada."]]) },
+    contacto: { title: "Hablemos de lo que quieres construir.", description: "Cuéntanos qué necesitas y te ayudaremos a definir el siguiente paso.", primaryCta: "Enviar solicitud", secondaryCta: "Escribir por WhatsApp", blocks: standardBlocks([["cta", "Conversemos", "Selecciona la línea de trabajo que te interesa y comparte el contexto de tu proyecto."]]) }
   },
   blog: [],
   knowledge: [
@@ -71,7 +95,18 @@ export const defaultContent: SiteContent = {
   contact: { phone: "2213759147", whatsapp: "522213759147" }
 };
 
-export const editablePageLabels: Record<PageKey, string> = { home: "Inicio", soluciones: "Soluciones", websites: "Websites", seguros: "Seguros", aprende: "J R Aprende", research: "J R Research", ramx: "RAMX", nosotros: "Nosotros / Acerca de" };
+export const editablePageLabels: Record<PageKey, string> = {
+  home: "Inicio",
+  soluciones: "Soluciones",
+  workspace: "Google Workspace",
+  seguros: "Seguros",
+  websites: "Websites",
+  aprende: "J R Aprende",
+  research: "J R Research",
+  ramx: "RAMX",
+  nosotros: "Nosotros / Acerca de",
+  contacto: "Contacto"
+};
 
 function mergePage(base: ManagedPage, value: unknown): ManagedPage {
   if (!value || typeof value !== "object") return base;
@@ -85,7 +120,12 @@ export function mergeSiteContent(value: unknown): SiteContent {
   return {
     home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: mergePage(defaultContent.research, incoming.research), ramx: mergePage(defaultContent.ramx, incoming.ramx),
     pages: {
-      soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones), websites: mergePage(defaultContent.pages.websites, incoming.pages?.websites), seguros: mergePage(defaultContent.pages.seguros, incoming.pages?.seguros), nosotros: mergePage(defaultContent.pages.nosotros, incoming.pages?.nosotros)
+      soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones),
+      workspace: mergePage(defaultContent.pages.workspace, incoming.pages?.workspace),
+      websites: mergePage(defaultContent.pages.websites, incoming.pages?.websites),
+      seguros: mergePage(defaultContent.pages.seguros, incoming.pages?.seguros),
+      nosotros: mergePage(defaultContent.pages.nosotros, incoming.pages?.nosotros),
+      contacto: mergePage(defaultContent.pages.contacto, incoming.pages?.contacto)
     },
     blog: Array.isArray(incoming.blog) ? incoming.blog : defaultContent.blog,
     knowledge: Array.isArray(incoming.knowledge) ? incoming.knowledge : defaultContent.knowledge,
@@ -94,5 +134,5 @@ export function mergeSiteContent(value: unknown): SiteContent {
 }
 
 export function pageFor(content: SiteContent, key: PageKey): ManagedPage { return key in content.pages ? content.pages[key as keyof typeof content.pages] : content[key as "home" | "aprende" | "research" | "ramx"]; }
-export const serviceOptions = ["Estrategia y crecimiento", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
+export const serviceOptions = ["Estrategia y crecimiento", "Google Workspace", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
 export type Lead = { id?: string; name: string; email: string; phone: string; company?: string; service: string; message: string; status?: "nuevo" | "en_revision" | "contactado" | "cerrado"; source?: string; created_at?: string; };
