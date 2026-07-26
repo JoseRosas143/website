@@ -6,9 +6,28 @@ const contentPath = path.join(process.cwd(), "data", "runtime-content.json");
 const leadsPath = path.join(process.cwd(), "data", "runtime-leads.json");
 
 function supabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
   return url && key ? { url, key } : null;
+}
+
+function supabaseHeaders(key: string, extra?: HeadersInit): HeadersInit {
+  return {
+    apikey: key,
+    // Las claves sb_secret_* nuevas no son JWT y no deben enviarse como Bearer.
+    ...(key.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${key}` }),
+    ...extra
+  };
+}
+
+async function supabaseError(response: Response, action: string): Promise<never> {
+  const raw = await response.text();
+  let detail = raw.trim();
+  try {
+    const payload = JSON.parse(raw) as { message?: string; details?: string; hint?: string; code?: string };
+    detail = [payload.message, payload.details, payload.hint, payload.code].filter(Boolean).join(" · ");
+  } catch {}
+  throw new Error(`${action} (Supabase ${response.status})${detail ? `: ${detail}` : "."}`);
 }
 
 function allowLocalWrites() {
@@ -30,10 +49,7 @@ export async function getSiteContent(): Promise<SiteContent> {
       const response = await fetch(
         `${config.url}/rest/v1/site_content?key=eq.global&select=content&limit=1`,
         {
-          headers: {
-            apikey: config.key,
-            Authorization: `Bearer ${config.key}`
-          },
+          headers: supabaseHeaders(config.key),
           cache: "no-store"
         }
       );
@@ -54,15 +70,15 @@ export async function saveSiteContent(content: SiteContent) {
   if (config) {
     const response = await fetch(`${config.url}/rest/v1/site_content?on_conflict=key`, {
       method: "POST",
-      headers: {
-        apikey: config.key,
-        Authorization: `Bearer ${config.key}`,
+      headers: supabaseHeaders(config.key, {
         "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal"
-      },
+        Prefer: "resolution=merge-duplicates,return=representation"
+      }),
       body: JSON.stringify({ key: "global", content: normalized, updated_at: new Date().toISOString() })
     });
-    if (!response.ok) throw new Error("No fue posible guardar el contenido en Supabase.");
+    if (!response.ok) await supabaseError(response, "No fue posible guardar el contenido");
+    const rows = await response.json() as Array<{ content?: unknown }>;
+    if (!rows[0]?.content) throw new Error("Supabase aceptó la solicitud, pero no confirmó el contenido guardado.");
     return { storage: "supabase" as const };
   }
   if (!allowLocalWrites()) {
@@ -84,12 +100,10 @@ export async function createLead(lead: Lead) {
   if (config) {
     const response = await fetch(`${config.url}/rest/v1/leads`, {
       method: "POST",
-      headers: {
-        apikey: config.key,
-        Authorization: `Bearer ${config.key}`,
+      headers: supabaseHeaders(config.key, {
         "Content-Type": "application/json",
         Prefer: "return=minimal"
-      },
+      }),
       body: JSON.stringify(record)
     });
     if (!response.ok) throw new Error("No fue posible registrar la solicitud.");
@@ -108,7 +122,7 @@ export async function getLeads(): Promise<Lead[]> {
     const response = await fetch(
       `${config.url}/rest/v1/leads?select=*&order=created_at.desc&limit=100`,
       {
-        headers: { apikey: config.key, Authorization: `Bearer ${config.key}` },
+        headers: supabaseHeaders(config.key),
         cache: "no-store"
       }
     );

@@ -83,7 +83,7 @@ Next.js y Vercel sirven muy bien el sitio, pero el sistema de archivos de un des
 
 Esto permite que los cambios, artículos, conocimiento del asistente y formularios sobrevivan a nuevos despliegues, funcionen desde varias instancias del sitio y estén disponibles para el administrador en cualquier dispositivo.
 
-La integración es exclusivamente del lado del servidor. La llave con privilegios elevados nunca se envía al navegador. Las tablas tienen Row Level Security activado y no incluyen políticas públicas; únicamente las rutas seguras del sitio pueden leer o escribir con la `SUPABASE_SERVICE_ROLE_KEY`.
+La integración es exclusivamente del lado del servidor. La llave con privilegios elevados nunca se envía al navegador. Las tablas tienen Row Level Security activado y no incluyen políticas públicas; únicamente las rutas seguras del sitio pueden leer o escribir con la `SUPABASE_SERVICE_ROLE_KEY`. También se admiten las claves nuevas `sb_secret_…` mediante `SUPABASE_SECRET_KEY`.
 
 En desarrollo, el proyecto puede funcionar sin Supabase y guardar datos en archivos JSON locales. Ese modo sirve para pruebas, pero no debe utilizarse en producción porque los datos podrían perderse durante un despliegue.
 
@@ -91,13 +91,13 @@ En desarrollo, el proyecto puede funcionar sin Supabase y guardar datos en archi
 
 1. Crea un proyecto en Supabase.
 2. Abre **SQL Editor**, crea una consulta y ejecuta completo `supabase/migrations/001_jr_consulting_cms.sql`. Si ya habías ejecutado una versión anterior, vuelve a ejecutar el archivo completo: es idempotente y añadirá el bucket `cms-assets`.
-3. En **Project Settings → API**, copia la URL del proyecto y la llave `service_role`.
+3. En **Project Settings → API**, copia la URL del proyecto y la llave `service_role`; si Supabase muestra una clave nueva `sb_secret_…`, también puedes usarla.
 4. Configura en Vercel:
    - `NEXT_PUBLIC_SITE_URL`
    - `ADMIN_PASSWORD`
    - `ADMIN_SESSION_SECRET`
    - `NEXT_PUBLIC_SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` o `SUPABASE_SECRET_KEY` (configura solamente una)
    - `OPENAI_API_KEY` (la llave creada para el asistente; también debe agregarse manualmente en Vercel, porque `.env.local` no se despliega)
 5. No uses el prefijo `NEXT_PUBLIC_` para la service role.
 6. Haz un nuevo despliegue y entra a `/admin`.

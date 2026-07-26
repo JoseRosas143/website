@@ -319,21 +319,23 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
     if (!file) return;
     setUploading(file.name);
     try {
-      if (file.size > 1_500_000) throw new Error("El archivo supera 1.5 MB.");
-      const text = await file.text();
-      if (!text.trim()) throw new Error("No se encontró texto legible. Usa TXT, MD, CSV o JSON.");
+      const data = new FormData();
+      data.append("file", file);
+      const response = await fetch("/api/admin/import-document", { method: "POST", body: data });
+      const result = await response.json() as { text?: string; truncated?: boolean; error?: string };
+      if (!response.ok || !result.text) throw new Error(result.error || "No fue posible importar el documento.");
       const id = crypto.randomUUID();
       const item: KnowledgeItem = {
         id,
         topic: "Documento importado",
         question: `Información de ${file.name}`,
-        answer: text.slice(0, 40_000),
+        answer: result.text,
         sourceName: file.name,
         updatedAt: new Date().toISOString()
       };
       applyContent((current) => ({ ...current, knowledge: [item, ...current.knowledge] }));
       setSelectedKnowledgeId(id);
-      setNotice("Documento importado. Revisa el contenido y publica los cambios.");
+      setNotice(`Documento importado${result.truncated ? " (se conservaron los primeros 80,000 caracteres)" : ""}. Revisa el contenido y publica los cambios.`);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "No fue posible importar el archivo.");
     } finally {
@@ -349,9 +351,9 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
       const response = await fetch("/api/admin/content", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(content)
+        body: JSON.stringify(contentRef.current)
       });
-      const data = await response.json();
+      const data = await response.json() as { storage?: string; error?: string };
       if (response.ok) {
         setDirty(false);
         setUndoStack([]);
@@ -574,7 +576,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
             <div className="cms-item-list">
               <div className="cms-panel-heading"><div><h2>Conocimiento</h2><p>{content.knowledge.length} respuestas</p></div><button onClick={addKnowledge}><Plus /></button></div>
               <label className="cms-search"><Search /><input value={knowledgeQuery} onChange={(event) => setKnowledgeQuery(event.target.value)} placeholder="Buscar tema o pregunta" /></label>
-              <label className="cms-import"><Upload /><span><strong>{uploading || "Importar archivo"}</strong><small>TXT, MD, CSV o JSON · 1.5 MB</small></span><input type="file" accept=".txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json" disabled={Boolean(uploading)} onChange={importKnowledgeFile} /></label>
+              <label className="cms-import"><Upload /><span><strong>{uploading || "Importar documento"}</strong><small>DOCX, TXT, MD, CSV o JSON · 4 MB</small></span><input type="file" accept=".docx,.txt,.md,.csv,.json" disabled={Boolean(uploading)} onChange={importKnowledgeFile} /></label>
               {filteredKnowledge.map((item) => <button key={item.id} className={selectedKnowledgeId === item.id ? "is-selected" : ""} onClick={() => setSelectedKnowledgeId(item.id)}><span>{item.topic}</span><strong>{item.question}</strong><small>{item.sourceName || "Respuesta manual"}</small></button>)}
             </div>
             <div className="cms-editor-surface">
