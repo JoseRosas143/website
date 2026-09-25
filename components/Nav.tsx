@@ -8,6 +8,7 @@ import { Logo } from "@/components/Logo";
 
 const links = [
   { href: "/soluciones", label: "Soluciones" },
+  { href: "/growth-lab", label: "Growth Lab" },
   { href: "/google-workspace", label: "Google Workspace" },
   { href: "/seguros", label: "Seguros" },
   { href: "/websites", label: "Websites" },

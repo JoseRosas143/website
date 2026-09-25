@@ -162,5 +162,5 @@ export function mergeSiteContent(value: unknown): SiteContent {
 }
 
 export function pageFor(content: SiteContent, key: PageKey): ManagedPage { return key in content.pages ? content.pages[key as keyof typeof content.pages] : content[key as "home" | "aprende" | "research" | "ramx"]; }
-export const serviceOptions = ["Estrategia y crecimiento", "Google Workspace", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
+export const serviceOptions = ["Estrategia y crecimiento", "Growth Lab — auditoría y crecimiento digital", "Google Workspace", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
 export type Lead = { id?: string; name: string; email: string; phone: string; company?: string; service: string; message: string; status?: "nuevo" | "en_revision" | "contactado" | "cerrado"; source?: string; created_at?: string; };
