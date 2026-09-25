@@ -1,5 +1,6 @@
 "use client";
 
+import { editableTree } from "@/lib/editable-tree";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef } from "react";
@@ -16,7 +17,7 @@ const services = [
 export function ServiceRail() {
   const rail = useRef<HTMLDivElement>(null);
   const scroll = (direction: number) => rail.current?.scrollBy({ left: direction * 360, behavior: "smooth" });
-  return (
+  return editableTree((
     <div className="service-rail-wrap">
       <button className="circle-button rail-back" onClick={() => scroll(-1)} aria-label="Servicios anteriores"><ArrowLeft /></button>
       <div className="service-rail" ref={rail}>
@@ -28,5 +29,5 @@ export function ServiceRail() {
       </div>
       <button className="circle-button rail-next" onClick={() => scroll(1)} aria-label="Siguientes servicios"><ArrowRight /></button>
     </div>
-  );
+  ), "home.services");
 }

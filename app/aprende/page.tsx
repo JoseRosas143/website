@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Bot, BriefcaseBusiness, Code2, FileCheck2, Info, Map, Pencil, Search, Target, Wrench, Workflow } from "lucide-react";
@@ -26,7 +30,7 @@ const aprendeCalendar = "https://calendar.google.com/calendar/appointments/sched
 
 export default async function AprendePage() {
   const content = await getSiteContent();
-  return (
+  return <VisualPage pageKey="aprende" initialPage={pageFor(content, "aprende")}>{editableTree((
     <>
       <section className="learn-hero">
         <div className="section-shell">
@@ -63,5 +67,5 @@ export default async function AprendePage() {
       </section>
       <CmsAdditionalBlocks blocks={content.aprende.blocks} pageKey="aprende" />
     </>
-  );
+  ), "aprende")}</VisualPage>;
 }

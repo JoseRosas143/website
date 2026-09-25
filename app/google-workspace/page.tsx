@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +35,7 @@ export default async function GoogleWorkspacePage() {
   const blocks = Object.fromEntries(page.blocks.filter((block) => block.enabled).map((block) => [block.type, block]));
   const legal = blocks.legal?.body || "J R Consulting es una firma de consultoría independiente y participa en el Programa de Referencias de Google Workspace. Google Workspace es contratado, proporcionado y facturado directamente por Google. Google y Google Workspace son marcas de Google LLC.";
 
-  return (
+  return <VisualPage pageKey="workspace" initialPage={pageFor(content, "workspace")}>{editableTree((
     <main className="workspace-page">
       <section className="workspace-hero">
         <div className="section-shell workspace-hero-grid">
@@ -123,7 +127,7 @@ export default async function GoogleWorkspacePage() {
       <section className="workspace-disclosure"><div className="section-shell"><ShieldCheck /><p>{legal}</p></div></section>
       <CmsAdditionalBlocks blocks={page.blocks} pageKey="workspace" />
     </main>
-  );
+  ), "workspace")}</VisualPage>;
 }
 
 function WorkspaceVisual() {
