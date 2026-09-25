@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Gauge, LockKeyhole, PenTool, Search, Smartphone, Target } from "lucide-react";
@@ -16,7 +20,7 @@ export const metadata: Metadata = pageMetadata(
 export default async function WebsitesPage() {
   const content = await getSiteContent();
   const page = content.pages.websites;
-  return (
+  return <VisualPage pageKey="websites" initialPage={pageFor(content, "websites")}>{editableTree((
     <>
       <section className="page-hero website-page-hero">
         <div className="page-hero-grid section-shell">
@@ -38,5 +42,5 @@ export default async function WebsitesPage() {
       <section className="section-pad soft-section" id="cotizar-website"><div className="learn-form-grid section-shell"><div><span className="label">Cotización</span><h2>Construyamos un website que tenga un trabajo claro.</h2><p className="section-intro">Cuéntanos si necesitas lanzar, rediseñar o corregir tu sitio. La propuesta se ajustará al alcance real.</p></div><QuoteForm defaultService="Website y presencia digital" source="websites" /></div></section>
       <CmsAdditionalBlocks blocks={page.blocks} pageKey="websites" />
     </>
-  );
+  ), "websites")}</VisualPage>;
 }

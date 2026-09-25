@@ -1,3 +1,4 @@
+import { normalizeVisualEdits, type VisualEdits } from "./visual-content";
 export type EditablePage = { title: string; description: string; primaryCta: string; secondaryCta: string };
 
 export type CmsBlock = {
@@ -19,6 +20,7 @@ export type BlogPost = {
   body: string;
   category: string;
   imageUrl?: string;
+  tags?: string[];
   published: boolean;
   publishedAt: string;
 };
@@ -32,8 +34,8 @@ export type KnowledgeItem = {
   updatedAt?: string;
 };
 
-export type ManagedPage = EditablePage & { blocks: CmsBlock[] };
-export type PageKey = "home" | "soluciones" | "workspace" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros" | "contacto";
+export type ManagedPage = EditablePage & { blocks: CmsBlock[]; visualEdits?: VisualEdits; sectionOrder?: string[]; hiddenSections?: string[] };
+export type PageKey = "home" | "growthlab" | "soluciones" | "workspace" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros" | "contacto";
 
 export type SiteContent = {
   home: ManagedPage;
@@ -66,6 +68,7 @@ export const defaultContent: SiteContent = {
   research: { title: "Protocolos claros, viables y defendibles.", description: "Acompañamiento metodológico para transformar una pregunta clínica en un protocolo congruente, ético y listo para revisión.", primaryCta: "Revisar mi protocolo", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Investigación que se sostiene", "Orden metodológico para llevar una idea clínica a un protocolo viable."]]) },
   ramx: { title: "Identidad digital que ayuda a proteger a cada mascota.", description: "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.", primaryCta: "Conocer RAMX", secondaryCta: "Solicitar información", blocks: standardBlocks([["hero", "Una identidad que acompaña", "Tecnología para proteger la historia de cada mascota."]]) },
   pages: {
+    growthlab: { title: "Haz que tu marketing deje de ser publicaciones sueltas y se convierta en un sistema.", description: "J R Consulting — Growth Lab conecta marketing, web, WhatsApp, CRM, automatización, datos e inteligencia artificial para atraer oportunidades, darles seguimiento y medir qué funciona.", primaryCta: "Solicitar auditoría", secondaryCta: "Ver Agenda Local OS", blocks: [] },
     soluciones: { title: "Soluciones que hacen que tu negocio avance.", description: "Estrategia, presencia digital y sistemas para convertir el trabajo diario en progreso medible.", primaryCta: "Hablar de mi negocio", secondaryCta: "Ver servicios", blocks: standardBlocks([["services", "Soluciones estratégicas", "Construimos sistemas claros para crecer con dirección."]]) },
     workspace: {
       title: "Google Workspace para empresas",
@@ -97,6 +100,7 @@ export const defaultContent: SiteContent = {
 
 export const editablePageLabels: Record<PageKey, string> = {
   home: "Inicio",
+  growthlab: "Growth Lab",
   soluciones: "Soluciones",
   workspace: "Google Workspace",
   seguros: "Seguros",
@@ -138,6 +142,9 @@ function mergePage(base: ManagedPage, value: unknown): ManagedPage {
     description: typeof candidate.description === "string" ? candidate.description : base.description,
     primaryCta: typeof candidate.primaryCta === "string" ? candidate.primaryCta : base.primaryCta,
     secondaryCta: typeof candidate.secondaryCta === "string" ? candidate.secondaryCta : base.secondaryCta,
+    visualEdits: normalizeVisualEdits(candidate.visualEdits),
+    sectionOrder: Array.isArray(candidate.sectionOrder) ? candidate.sectionOrder.filter((id): id is string => typeof id === "string") : [],
+    hiddenSections: Array.isArray(candidate.hiddenSections) ? candidate.hiddenSections.filter((id): id is string => typeof id === "string") : [],
     blocks: normalizeBlocks(candidate.blocks, base.blocks)
   };
 }
@@ -148,6 +155,7 @@ export function mergeSiteContent(value: unknown): SiteContent {
   return {
     home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: mergePage(defaultContent.research, incoming.research), ramx: mergePage(defaultContent.ramx, incoming.ramx),
     pages: {
+      growthlab: mergePage(defaultContent.pages.growthlab, incoming.pages?.growthlab),
       soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones),
       workspace: mergePage(defaultContent.pages.workspace, incoming.pages?.workspace),
       websites: mergePage(defaultContent.pages.websites, incoming.pages?.websites),
@@ -155,7 +163,7 @@ export function mergeSiteContent(value: unknown): SiteContent {
       nosotros: mergePage(defaultContent.pages.nosotros, incoming.pages?.nosotros),
       contacto: mergePage(defaultContent.pages.contacto, incoming.pages?.contacto)
     },
-    blog: Array.isArray(incoming.blog) ? incoming.blog : defaultContent.blog,
+    blog: Array.isArray(incoming.blog) ? incoming.blog.filter((post) => post && typeof post === "object").map((post) => ({ ...post, tags: normalizeTags(post.tags) })) : defaultContent.blog,
     knowledge: Array.isArray(incoming.knowledge) ? incoming.knowledge : defaultContent.knowledge,
     contact: { ...defaultContent.contact, ...incoming.contact }
   };
@@ -164,3 +172,10 @@ export function mergeSiteContent(value: unknown): SiteContent {
 export function pageFor(content: SiteContent, key: PageKey): ManagedPage { return key in content.pages ? content.pages[key as keyof typeof content.pages] : content[key as "home" | "aprende" | "research" | "ramx"]; }
 export const serviceOptions = ["Estrategia y crecimiento", "Growth Lab — auditoría y crecimiento digital", "Google Workspace", "Soluciones tecnológicas e IA", "Website y presencia digital", "J R Aprende — capacitación", "J R Research — protocolo", "RAMX", "Seguros", "Otro"] as const;
 export type Lead = { id?: string; name: string; email: string; phone: string; company?: string; service: string; message: string; status?: "nuevo" | "en_revision" | "contactado" | "cerrado"; source?: string; created_at?: string; };
+
+export function normalizeTags(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const unique = new Map<string,string>();
+  for (const tag of value) { if (typeof tag !== "string") continue; const clean=tag.trim().replace(/\s+/g," ").slice(0,60); if(clean && !unique.has(clean.toLocaleLowerCase("es"))) unique.set(clean.toLocaleLowerCase("es"),clean); }
+  return [...unique.values()].slice(0,20);
+}

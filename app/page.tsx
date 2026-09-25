@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Crosshair, PenTool } from "lucide-react";
 import { BusinessSystemVisual } from "@/components/BusinessSystemVisual";
@@ -8,7 +12,7 @@ import { getSiteContent } from "@/lib/storage";
 
 export default async function Home() {
   const content = await getSiteContent();
-  return (
+  return <VisualPage pageKey="home" initialPage={pageFor(content, "home")}>{editableTree((
     <>
       <section className="home-hero">
         <div className="home-hero-grid section-shell">
@@ -95,5 +99,5 @@ export default async function Home() {
       <section className="ecosystem-cta"><h2>Cuéntanos qué quieres construir.</h2><Link className="button button--light" href="/contacto">Agenda una conversación <ArrowRight size={18} /></Link></section>
       <CmsAdditionalBlocks blocks={content.home.blocks} pageKey="home" />
     </>
-  );
+  ), "home")}</VisualPage>;
 }

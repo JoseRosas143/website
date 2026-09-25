@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Bot, BriefcaseBusiness, Check, Layers3, MonitorSmartphone, ShieldCheck, Workflow } from "lucide-react";
@@ -18,7 +22,7 @@ const businessCalendar = "https://calendar.google.com/calendar/appointments/sche
 export default async function SolucionesPage() {
   const content = await getSiteContent();
   const page = content.pages.soluciones;
-  return (
+  return <VisualPage pageKey="soluciones" initialPage={pageFor(content, "soluciones")}>{editableTree((
     <>
       <section className="page-hero"><div className="page-hero-grid section-shell"><div className="page-hero-copy"><h1>{page.title}</h1><p>{page.description}</p><div className="hero-actions"><Link className="button button--primary" href="/cotizar">{page.primaryCta} <ArrowRight size={18} /></Link><a className="button button--outline" href="#agenda">{page.secondaryCta}</a></div></div><div className="page-hero-art solution-orbit"><Layers3 /><span>Estrategia</span><span>Operación</span><span>Tecnología</span></div></div></section>
       <section className="section-pad"><div className="section-shell"><span className="label">Áreas de trabajo</span><h2 className="section-heading">La solución debe adaptarse al problema, no al revés.</h2><div className="solution-lines">
@@ -34,5 +38,5 @@ export default async function SolucionesPage() {
       <section className="section-pad" id="agenda"><div className="section-shell"><span className="label">Elige el punto de partida</span><h2 className="section-heading">Una conversación enfocada desde el inicio.</h2><div className="appointment-grid"><article><Bot /><h3>Soluciones tecnológicas</h3><p>Para websites, automatización, inteligencia artificial, integraciones o sistemas.</p><CalendarButton url={techCalendar} /></article><article><BriefcaseBusiness /><h3>Necesidades del negocio</h3><p>Para ordenar prioridades, oferta, crecimiento, operación o tomar una decisión estratégica.</p><CalendarButton url={businessCalendar} /></article></div></div></section>
       <CmsAdditionalBlocks blocks={page.blocks} pageKey="soluciones" />
     </>
-  );
+  ), "soluciones")}</VisualPage>;
 }

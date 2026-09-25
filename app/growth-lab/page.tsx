@@ -1,3 +1,9 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
+import { getSiteContent } from "@/lib/storage";
+import { CmsAdditionalBlocks } from "@/components/CmsAdditionalBlocks";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -40,8 +46,9 @@ const method = [
   ["Mejora", "Documentamos lo aprendido y mejoramos el sistema."]
 ] as const;
 
-export default function GrowthLabPage() {
-  return (
+export default async function GrowthLabPage() {
+  const content = await getSiteContent();
+  return <VisualPage pageKey="growthlab" initialPage={pageFor(content, "growthlab")}>{editableTree((
     <>
       <section className="home-hero">
         <div className="home-hero-grid section-shell">
@@ -182,6 +189,7 @@ export default function GrowthLabPage() {
           <QuoteForm defaultService="Growth Lab — auditoría y crecimiento digital" source="growth-lab" />
         </div>
       </section>
+      <CmsAdditionalBlocks blocks={content.pages.growthlab.blocks} pageKey="growthlab" />
     </>
-  );
+  ), "growthlab")}</VisualPage>;
 }

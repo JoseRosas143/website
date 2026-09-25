@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpenCheck, FileSearch, Microscope, Scale, ShieldCheck, Waypoints } from "lucide-react";
@@ -14,7 +18,7 @@ export const metadata: Metadata = pageMetadata(
 
 export default async function ResearchPage() {
   const content = await getSiteContent();
-  return (
+  return <VisualPage pageKey="research" initialPage={pageFor(content, "research")}>{editableTree((
     <>
       <section className="page-hero research-hero"><div className="page-hero-grid section-shell"><div className="page-hero-copy"><h1>{content.research.title}</h1><p>{content.research.description}</p><div className="hero-actions"><a className="button button--primary" href="#research-form">{content.research.primaryCta} <ArrowRight size={18} /></a><a className="button button--outline" href="#proceso">{content.research.secondaryCta}</a></div></div><div className="protocol-visual"><div><strong>Protocolo de investigación</strong>{["Pregunta y problema", "Objetivos e hipótesis", "Diseño y variables", "Muestra y análisis", "Ética y anexos"].map((item, index) => <span key={item}><i>{index + 1}</i>{item}</span>)}</div><Waypoints /></div></div></section>
       <section className="section-pad" id="proceso"><div className="section-shell"><span className="label">Acompañamiento metodológico</span><h2 className="section-heading">Del planteamiento a un documento congruente.</h2><div className="research-process">{[
@@ -28,5 +32,5 @@ export default async function ResearchPage() {
       <section className="section-pad soft-section" id="research-form"><div className="learn-form-grid section-shell"><div><span className="label">Revisión inicial</span><h2>Cuéntanos en qué etapa está tu protocolo.</h2><p className="section-intro">Describe el tema, institución, especialidad, avance actual y fecha límite. Te diremos con claridad qué podemos trabajar.</p><Link className="text-link" href="/contacto#agenda">Prefiero agendar una conversación <ArrowRight /></Link></div><QuoteForm defaultService="J R Research — protocolo" source="research" /></div></section>
       <CmsAdditionalBlocks blocks={content.research.blocks} pageKey="research" />
     </>
-  );
+  ), "research")}</VisualPage>;
 }

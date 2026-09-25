@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+import { VisualPage } from "@/components/VisualPage";
+import { editableTree } from "@/lib/editable-tree";
+import { pageFor } from "@/lib/site-content";
 import type { Metadata } from "next";
 import { Bot, BriefcaseBusiness, MessageCircle, Phone } from "lucide-react";
 import { CalendarButton } from "@/components/CalendarButton";
@@ -14,11 +18,11 @@ const businessCalendar = "https://calendar.google.com/calendar/appointments/sche
 export default async function ContactoPage() {
   const content = await getSiteContent();
   const page = content.pages.contacto;
-  return (
+  return <VisualPage pageKey="contacto" initialPage={pageFor(content, "contacto")}>{editableTree((
     <><section className="contact-hero section-pad"><div className="section-shell"><h1>{page.title}</h1><div className="contact-intro"><p>{page.description}</p><div><a href="tel:+522213759147"><Phone />221 375 9147</a><a href="https://wa.me/522213759147" target="_blank" rel="noreferrer"><MessageCircle />WhatsApp</a></div></div></div></section>
       <section className="section-pad soft-section" id="agenda"><div className="section-shell"><span className="label">Agenda directa</span><h2 className="section-heading">Elige la conversación adecuada.</h2><div className="appointment-grid"><article><Bot /><h3>Soluciones tecnológicas</h3><p>Websites, automatización, IA, integraciones, herramientas o sistemas digitales.</p><CalendarButton url={techCalendar} /></article><article><BriefcaseBusiness /><h3>Necesidades del negocio</h3><p>Estrategia, oferta, operación, crecimiento, prioridades o acompañamiento general.</p><CalendarButton url={businessCalendar} /></article></div></div></section>
       <section className="section-pad"><div className="learn-form-grid section-shell"><div><span className="label">Cotización o consulta</span><h2>También puedes dejarnos el contexto por escrito.</h2><p className="section-intro">Responderemos con preguntas concretas y, cuando aplique, una propuesta de alcance.</p></div><QuoteForm source="contacto" /></div></section>
       <CmsAdditionalBlocks blocks={page.blocks} pageKey="contacto" />
     </>
-  );
+  ), "contacto")}</VisualPage>;
 }
