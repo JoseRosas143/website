@@ -7,9 +7,10 @@ import { useRef } from "react";
 const services = [
   ["01", "Estrategia y crecimiento", "Alineamos propósito, oferta y operación para crecer con foco.", "/soluciones#estrategia"],
   ["02", "Tecnología e IA", "Implementamos herramientas y automatizaciones que optimizan tu negocio.", "/soluciones#tecnologia"],
-  ["03", "Websites", "Sitios rápidos, seguros y orientados a convertir.", "/websites"],
-  ["04", "J R Aprende", "Capacitación práctica para ti y tu equipo.", "/aprende"],
-  ["05", "J R Research", "Metodología aplicada para protocolos congruentes.", "/research"]
+  ["03", "Growth Lab", "Marketing, captación, seguimiento y automatización conectados en un mismo sistema.", "/growth-lab"],
+  ["04", "Websites", "Sitios rápidos, seguros y orientados a convertir.", "/websites"],
+  ["05", "J R Aprende", "Capacitación práctica para ti y tu equipo.", "/aprende"],
+  ["06", "J R Research", "Metodología aplicada para protocolos congruentes.", "/research"]
 ];
 
 export function ServiceRail() {
