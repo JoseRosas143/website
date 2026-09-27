@@ -46,6 +46,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
   const [knowledgeQuery, setKnowledgeQuery] = useState("");
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
+  const [blogBusy, setBlogBusy] = useState(false);
   const [uploading, setUploading] = useState("");
 
   useEffect(() => {
@@ -276,7 +277,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
           )}
           <div className="cms-header-actions">
             <a className="button button--outline" href={section === "pages" ? pageRoutes[selected] : section === "blog" ? "/blog" : "/"} target="_blank" rel="noreferrer">Ver sitio <ExternalLink size={16} /></a>
-            {section !== "leads" && <button className="button button--primary" onClick={save} disabled={saving}><Save size={16} />{saving ? "Publicando…" : "Publicar cambios"}</button>}
+            {section !== "leads" && <button className="button button--primary" onClick={save} disabled={saving || blogBusy}><Save size={16} />{saving ? "Publicando…" : "Publicar cambios"}</button>}
           </div>
         </header>
 
@@ -308,7 +309,7 @@ export function AdminDashboard({ initialContent, initialLeads }: { initialConten
                 <div className="cms-editor-title"><div><span>{selectedPost.published ? "Publicado" : "Borrador"}</span><h2>{selectedPost.title}</h2></div><button className="cms-delete" onClick={() => { applyContent((current) => ({ ...current, blog: current.blog.filter((item) => item.id !== selectedPost.id) })); setSelectedPostId(""); }}><Trash2 />Eliminar</button></div>
                 <div className="cms-two-fields"><label>Título<input value={selectedPost.title} onChange={(event) => updatePost(selectedPost.id, "title", event.target.value)} /></label><label>URL / slug<input value={selectedPost.slug} onChange={(event) => updatePost(selectedPost.id, "slug", slugify(event.target.value))} /></label></div>
                 <label>Resumen<textarea rows={3} value={selectedPost.excerpt} onChange={(event) => updatePost(selectedPost.id, "excerpt", event.target.value)} /></label>
-                <BlogEditor value={selectedPost.body} onChange={(value) => updatePost(selectedPost.id, "body", value)} />
+                <BlogEditor key={selectedPost.id} onBusyChange={setBlogBusy} value={selectedPost.body} onChange={(value) => updatePost(selectedPost.id, "body", value)} />
                 <label>Etiquetas (separadas por comas)<input value={(selectedPost.tags || []).join(",")} placeholder="Estrategia, Tecnología, Growth Lab" onChange={(event) => updatePost(selectedPost.id, "tags", event.target.value.split(","))} /></label>
                 <div className="cms-two-fields"><label>Categoría<input value={selectedPost.category} onChange={(event) => updatePost(selectedPost.id, "category", event.target.value)} /></label><label>Imagen de portada<input value={selectedPost.imageUrl || ""} placeholder="https://…" onChange={(event) => updatePost(selectedPost.id, "imageUrl", event.target.value)} /></label></div>
                 <label className="cms-upload cms-upload--horizontal"><Upload /><span><strong>{uploading || "Subir imagen de portada"}</strong><small>JPG, PNG o WebP · máximo 4 MB</small></span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={Boolean(uploading)} onChange={(event) => uploadImage(event, (url) => updatePost(selectedPost.id, "imageUrl", url))} /></label>

@@ -1123,3 +1123,15 @@ h1, h2, h3, p { margin-top: 0; }
 
 
 .article-page > .text-link { display: flex; width: fit-content; margin-bottom: 20px; }
+
+/* Rich blog content remains readable inside the editor and on narrow screens. */
+.blog-table-scroll { overflow-x: auto; max-width: 100%; margin: 1.5rem 0; }
+.blog-table-scroll:focus-visible { outline: 2px solid var(--aqua); outline-offset: 3px; }
+.markdown-body .blog-table-scroll table { display: table; width: 100%; min-width: 420px; margin: 0; }
+.markdown-body img { display: block; max-width: 100%; height: auto; margin: 1.5rem auto; border-radius: 8px; }
+.markdown-body pre { max-width: 100%; overflow-x: auto; padding: 1rem; background: #f3f6f6; border-radius: 6px; }
+.markdown-body blockquote { margin: 1.5rem 0; padding: .5rem 1.25rem; border-left: 3px solid var(--aqua); background: #f3f8f8; }
+.markdown-body .katex-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; padding: .6rem 0; }
+.markdown-body .katex { font-size: 1.1em; }
+.markdown-body .katex-error { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cms-blog-composer[aria-busy="true"] textarea { opacity: .7; }
