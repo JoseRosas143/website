@@ -11,13 +11,17 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "katex": "^0.18.9",
     "lucide-react": "1.25.0",
     "mammoth": "^1.11.0",
     "next": "16.2.11",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "turndown": "^7.2.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.9.1",
@@ -25,6 +29,7 @@
     "@types/node": "24.10.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "@types/turndown": "^5.0.6",
     "eslint": "9.39.1",
     "eslint-config-next": "16.2.11",
     "jsdom": "27.3.0",
