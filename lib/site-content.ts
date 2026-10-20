@@ -1,3 +1,4 @@
+import { serviceCopy, upgradeServiceCopy } from "./service-copy";
 import { normalizeVisualEdits, type VisualEdits } from "./visual-content";
 export type EditablePage = { title: string; description: string; primaryCta: string; secondaryCta: string };
 
@@ -57,7 +58,7 @@ export const defaultContent: SiteContent = {
     primaryCta: "Hablemos de tu proyecto", secondaryCta: "Explorar soluciones",
     blocks: standardBlocks([
       ["hero", "Estrategia que se convierte en avance", "Unimos claridad, tecnología y ejecución para que las buenas ideas se conviertan en negocios más fuertes."],
-      ["insurance", "Seguros que sí responden", "Protegemos tus vehículos y lo que has construido con atención cercana y opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI."],
+      ["insurance", "Compara seguros de auto con información clara", "Protegemos tus vehículos y lo que has construido con atención cercana y opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI."],
       ["services", "Soluciones con propósito", "Consultoría, IA, websites, capacitación y servicios profesionales para construir capacidades reales."],
       ["story", "Nuestra historia", "J R Consulting nace de una convicción sencilla: el crecimiento debe ser accesible, humano y aplicable, no una promesa lejana."],
       ["ecosystem", "Un ecosistema para avanzar", "J R Aprende, J R Research, RAMX y próximamente J R OS conectan conocimiento, tecnología y acción."],
@@ -65,7 +66,7 @@ export const defaultContent: SiteContent = {
     ])
   },
   aprende: { title: "Aprender para abrir oportunidades reales.", description: "Rutas prácticas para desarrollar habilidades digitales, avanzar hacia certificaciones reconocidas y aplicar lo aprendido desde el primer proyecto.", primaryCta: "Explorar rutas", secondaryCta: "Capacitación para equipos", blocks: standardBlocks([["hero", "Aprender para avanzar", "Capacitación útil, acompañamiento y evidencia de lo que sabes hacer."]]) },
-  research: { title: "Protocolos claros, viables y defendibles.", description: "Acompañamiento metodológico para transformar una pregunta clínica en un protocolo congruente, ético y listo para revisión.", primaryCta: "Revisar mi protocolo", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Investigación que se sostiene", "Orden metodológico para llevar una idea clínica a un protocolo viable."]]) },
+  research: { ...serviceCopy.research, blocks: standardBlocks([["hero", "Investigación que se sostiene", "Orden metodológico para llevar una idea clínica a un protocolo viable."]]) },
   ramx: { title: "Identidad digital que ayuda a proteger a cada mascota.", description: "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.", primaryCta: "Conocer RAMX", secondaryCta: "Solicitar información", blocks: standardBlocks([["hero", "Una identidad que acompaña", "Tecnología para proteger la historia de cada mascota."]]) },
   pages: {
     growthlab: { title: "Haz que tu marketing deje de ser publicaciones sueltas y se convierta en un sistema.", description: "J R Consulting — Growth Lab conecta marketing, web, WhatsApp, CRM, automatización, datos e inteligencia artificial para atraer oportunidades, darles seguimiento y medir qué funciona.", primaryCta: "Solicitar auditoría", secondaryCta: "Ver Agenda Local OS", blocks: [] },
@@ -85,7 +86,7 @@ export const defaultContent: SiteContent = {
       ])
     },
     websites: { title: "Websites que explican, atraen y convierten.", description: "Diseño y desarrollo pensado para hacer visible el valor de tu negocio.", primaryCta: "Cotizar mi website", secondaryCta: "Conocer el proceso", blocks: standardBlocks([["hero", "Tu sitio trabaja contigo", "No es un folleto: es una herramienta para explicar, atraer y convertir."]]) },
-    seguros: { title: "Protección cercana para lo que más importa.", description: "Cotizamos seguros de auto con acompañamiento humano para tomar decisiones claras.", primaryCta: "Cotizar mi seguro", secondaryCta: "Hablar por WhatsApp", blocks: standardBlocks([["insurance", "Seguros que sí responden", "Opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI para proteger tu camino."]]) },
+    seguros: { ...serviceCopy.seguros, blocks: standardBlocks([["insurance", "Compara seguros de auto con información clara", "Opciones de Quálitas, MAPFRE, Afirme, Chubb y HDI para proteger tu camino."]]) },
     nosotros: { title: "Crecemos contigo, no desde lejos.", description: "Somos una firma que une consultoría, tecnología, educación y acompañamiento para hacer posible el siguiente paso.", primaryCta: "Conocer nuestras soluciones", secondaryCta: "Hablemos", blocks: standardBlocks([["story", "Nuestra historia", "J R Consulting nació para acercar herramientas, método y acompañamiento a quienes están construyendo algo importante."], ["rich-text", "Nuestros valores", "Escuchamos antes de proponer. Hacemos lo complejo entendible. Cumplimos con cercanía y construimos soluciones que dejan capacidad instalada."]]) },
     contacto: { title: "Hablemos de lo que quieres construir.", description: "Cuéntanos qué necesitas y te ayudaremos a definir el siguiente paso.", primaryCta: "Enviar solicitud", secondaryCta: "Escribir por WhatsApp", blocks: standardBlocks([["cta", "Conversemos", "Selecciona la línea de trabajo que te interesa y comparte el contexto de tu proyecto."]]) }
   },
@@ -153,13 +154,13 @@ export function mergeSiteContent(value: unknown): SiteContent {
   if (!value || typeof value !== "object") return defaultContent;
   const incoming = value as Partial<SiteContent>;
   return {
-    home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: mergePage(defaultContent.research, incoming.research), ramx: mergePage(defaultContent.ramx, incoming.ramx),
+    home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: upgradeServiceCopy("research", mergePage(defaultContent.research, incoming.research)), ramx: mergePage(defaultContent.ramx, incoming.ramx),
     pages: {
       growthlab: mergePage(defaultContent.pages.growthlab, incoming.pages?.growthlab),
       soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones),
       workspace: mergePage(defaultContent.pages.workspace, incoming.pages?.workspace),
       websites: mergePage(defaultContent.pages.websites, incoming.pages?.websites),
-      seguros: mergePage(defaultContent.pages.seguros, incoming.pages?.seguros),
+      seguros: upgradeServiceCopy("seguros", mergePage(defaultContent.pages.seguros, incoming.pages?.seguros)),
       nosotros: mergePage(defaultContent.pages.nosotros, incoming.pages?.nosotros),
       contacto: mergePage(defaultContent.pages.contacto, incoming.pages?.contacto)
     },

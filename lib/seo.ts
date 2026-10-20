@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://jrconsulting.mx";
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.jrconsulting.com.mx").replace(/\/+$/, "");
 
 export function pageMetadata(title: string, description: string, path = ""): Metadata {
   const url = `${siteUrl}${path}`;

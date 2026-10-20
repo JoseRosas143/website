@@ -42,7 +42,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="insurance-spotlight"><div className="section-shell"><div><span>J R Seguros</span><h2>Protege el camino que ya construiste.</h2><p>Te ayudamos a comparar y cotizar seguros de auto con atención clara, cercana y humana.</p><Link className="button button--light" href="/seguros">Cotizar mi seguro <ArrowRight size={18} /></Link></div><ul><li>Quálitas</li><li>MAPFRE</li><li>Afirme</li><li>Chubb</li><li>HDI</li></ul></div></section>
+      <section className="insurance-spotlight"><div className="section-shell"><div><span>J R Seguros</span><h2>Seguros de auto en Puebla: compara antes de contratar.</h2><p>Revisa opciones, coberturas y deducibles con asesoría personal. Solicita una cotización para tu vehículo y toma una decisión informada.</p><Link className="button button--light" href="/seguros">Cotizar mi seguro <ArrowRight size={18} /></Link></div><ul><li>Quálitas</li><li>MAPFRE</li><li>Afirme</li><li>Chubb</li><li>HDI</li></ul></div></section>
 
       <section className="websites-feature section-pad">
         <div className="website-grid section-shell">
