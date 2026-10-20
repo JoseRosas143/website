@@ -1135,3 +1135,14 @@ h1, h2, h3, p { margin-top: 0; }
 .markdown-body .katex { font-size: 1.1em; }
 .markdown-body .katex-error { white-space: pre-wrap; overflow-wrap: anywhere; }
 .cms-blog-composer[aria-busy="true"] textarea { opacity: .7; }
+
+.service-faq { display: grid; gap: 12px; margin: 30px 0; }
+.service-faq details { border: 1px solid #d5e0e0; border-radius: 8px; padding: 20px 24px; background: white; }
+.service-faq summary { cursor: pointer; font-weight: 650; line-height: 1.5; }
+.service-faq summary:focus-visible { outline: 2px solid #087c85; outline-offset: 6px; }
+.service-faq p { margin: 16px 0 0; max-width: 85ch; line-height: 1.8; }
+.service-note { margin-top: 28px; color: #47585b; line-height: 1.8; }
+.service-note a { color: #076974; text-decoration: underline; }
+.service-scope-list { padding-left: 22px; margin: 25px 0; max-width: 90ch; }
+.service-scope-list li { padding: 9px 0; line-height: 1.8; }
+@media (max-width: 640px) { .service-faq details { padding: 16px; } }

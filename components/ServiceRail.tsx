@@ -11,7 +11,7 @@ const services = [
   ["03", "Growth Lab", "Marketing, captación, seguimiento y automatización conectados en un mismo sistema.", "/growth-lab"],
   ["04", "Websites", "Sitios rápidos, seguros y orientados a convertir.", "/websites"],
   ["05", "J R Aprende", "Capacitación práctica para ti y tu equipo.", "/aprende"],
-  ["06", "J R Research", "Metodología aplicada para protocolos congruentes.", "/research"]
+  ["06", "J R Research", "Asesoría metodológica para protocolos de investigación y tesis en salud.", "/research"]
 ];
 
 export function ServiceRail() {
