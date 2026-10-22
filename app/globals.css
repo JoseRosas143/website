@@ -1146,3 +1146,28 @@ h1, h2, h3, p { margin-top: 0; }
 .service-scope-list { padding-left: 22px; margin: 25px 0; max-width: 90ch; }
 .service-scope-list li { padding: 9px 0; line-height: 1.8; }
 @media (max-width: 640px) { .service-faq details { padding: 16px; } }
+
+/* Supplied brand artwork is displayed intact, including its background and lettering. */
+.brand-logo-image { display: block; width: 88px; height: 88px; max-width: 100%; object-fit: contain; flex-shrink: 0; }
+.site-header { height: max(var(--header), 100px); }
+.site-footer .brand-logo-image { width: 144px; height: 144px; border-radius: 6px; }
+.admin-route .cms-sidebar .brand-logo-image { width: 96px; height: auto; }
+.blog-promotion { padding: 64px 0; border-top: 1px solid var(--line); background: #f5f7f7; }
+.blog-promotion-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.blog-promotion-heading h2 { font-size: clamp(28px, 3vw, 40px); margin: 10px 0; }
+.blog-promotion-heading p { color: var(--muted); max-width: 65ch; }
+.blog-promotion-heading > a { flex-shrink: 0; }
+.blog-promotion-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.blog-promotion-card { display: flex; flex-direction: column; min-width: 0; background: white; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: box-shadow .2s; }
+.blog-promotion-card:hover { box-shadow: 0 8px 24px #16363715; }
+.blog-promotion-card:focus-visible { outline: 3px solid #087c85; outline-offset: 4px; }
+.blog-promotion-cover { aspect-ratio: 16 / 9; overflow: hidden; background: #f4f4f4; }
+.blog-promotion-cover img { width: 100%; height: 100%; object-fit: contain; }
+.blog-promotion-copy { padding: 24px; display: flex; flex-direction: column; flex: 1; }
+.blog-promotion-copy > span:first-child { font-size: 12px; color: #076974; }
+.blog-promotion-copy h3 { font-size: 23px; line-height: 1.25; margin: 12px 0; overflow-wrap: anywhere; }
+.blog-promotion-copy p { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin: 0 0 20px; }
+.blog-promotion-read { display: flex; align-items: center; gap: 8px; margin-top: auto; color: #076974; font-weight: 600; }
+.blog-promotion-empty a { text-decoration: underline; }
+@media (max-width: 760px) { .blog-promotion-grid { grid-template-columns: 1fr; }.blog-promotion-heading { align-items: start; flex-direction: column; }.blog-promotion { padding: 40px 0; } }
+@media (max-width: 640px) { .brand-logo-image { width: 64px; height: 64px; }.site-header { height: max(var(--header), 76px); } }

@@ -10,6 +10,6 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#ffffff",
     theme_color: "#ffffff",
     lang: "es-MX",
-    icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }]
+    icons: [{ src: "/brand/jr-consulting.jpg", sizes: "1280x1280", type: "image/jpeg", purpose: "any" }]
   };
 }
