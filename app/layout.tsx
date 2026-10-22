@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+import { BlogPromotion } from "@/components/BlogPromotion";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
   authors: [{ name: "J R Consulting" }],
   creator: "J R Consulting",
   category: "Consultoría empresarial",
-  icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
+  icons: { icon: [{ url: "/icon.jpg", type: "image/jpeg" }], shortcut: "/icon.jpg", apple: "/brand/jr-consulting.jpg" },
   manifest: "/manifest.webmanifest"
 };
 
@@ -38,6 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#contenido">Saltar al contenido</a>
         <Nav />
         <div id="contenido">{children}</div>
+        <BlogPromotion />
         <Footer />
         <AiConcierge />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
