@@ -1,0 +1,50 @@
+.project { color: #162b2c; }
+.hero { background: linear-gradient(125deg, #f2f9f8, #fff 70%); padding: 76px 0; }
+.heroGrid { display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 64px; }
+.hero h1 { font-size: clamp(42px, 5.2vw, 72px); line-height: 1.08; letter-spacing: -.035em; margin: 22px 0; }
+.lead { font-size: 20px; line-height: 1.7; max-width: 62ch; color: #425b5c; }
+.caption { font-size: 13px; line-height: 1.7; color: #516768; margin-top: 24px; }
+.conversation { background: #fff; border: 1px solid #cddfdd; border-radius: 24px; overflow: hidden; box-shadow: 0 22px 60px #143b3512; }
+.chatHeader { display: flex; align-items: center; gap: 14px; padding: 24px; background: #143c3c; color: white; }
+.chatHeader > svg { width: 32px; height: 32px; }
+.chatHeader strong, .chatHeader div span { display: block; }
+.chatHeader div span { font-size: 12px; color: #d4e8e4; margin-top: 3px; }
+.demo { margin-left: auto; font-size: 10px; letter-spacing: .12em; border: 1px solid #7da6a1; padding: 4px 8px; border-radius: 20px; }
+.chatBody { padding: 24px; background: #f0f5f2; font-size: 14px; }
+.bubble, .patient { padding: 15px 18px; line-height: 1.65; border-radius: 12px; margin-bottom: 16px; max-width: 92%; }
+.bubble { background: white; border: 1px solid #e0e9e4; }
+.patient { background: #d1eeea; margin-left: auto; }
+.chatOptions { display: grid; gap: 8px; }
+.chatOptions span { padding: 11px; text-align: center; background: #fff; color: #17675f; border: 1px solid #d8e4df; border-radius: 8px; }
+.chatDisclaimer { font-size: 11px; line-height: 1.6; padding: 14px 24px; margin: 0; color: #536966; }
+.features { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 26px; margin-top: 38px; }
+.features article { border-top: 2px solid #b6d9d4; padding-top: 24px; }
+.features svg { color: #087970; margin-bottom: 18px; }
+.features h3 { font-size: 21px; line-height: 1.3; }
+.features p { color: #4d6262; line-height: 1.8; }
+.scope { background: #143c3c; color: white; padding: 60px 0; }
+.scopeGrid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 64px; }
+.scope h2 { font-size: 38px; line-height: 1.2; margin-top: 20px; }
+.scope p { color: #e3eeeb; line-height: 1.8; }
+.scope :global(.label) { color: #a2dfd6; }
+.legalCards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+.legalCards > a { padding: 32px; border: 1px solid #ccdeda; border-radius: 14px; background: #f7faf9; }
+.legalCards h3 { margin: 20px 0 12px; font-size: 26px; }
+.legalCards p { color: #4d6262; line-height: 1.75; }
+.legalCards span { display: flex; align-items: center; gap: 12px; color: #06675f; font-weight: 600; }
+.legalCards > a:hover { border-color: #087970; background: #edf6f3; }
+.privacyContact { margin-top: 28px; }
+.privacyContact a, .legal a:not(:global(.button)) { text-decoration: underline; text-underline-offset: 4px; }
+.project a:focus-visible, .legal a:focus-visible { outline: 3px solid #087970; outline-offset: 5px; }
+.project section[id], .legal section[id] { scroll-margin-top: 120px; }
+.legal { max-width: 960px; }
+.legal h1 { font-size: clamp(36px,5vw,56px); line-height: 1.15; }
+.legal > :global(.label) { margin-top: 32px; }
+.legal section { margin: 44px 0; }
+.legal section h2 { font-size: 26px; line-height: 1.3; }
+.legal section p { line-height: 1.9; color: #354b4c; }
+.contents { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; padding: 24px; background: #f1f6f4; border-radius: 12px; font-size: 14px; }
+.legalEnd { border-top: 1px solid #cfddda; padding-top: 24px; overflow-wrap: anywhere; }
+@media(max-width:1000px) { .heroGrid { gap: 32px; }.features { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:700px) { .hero { padding: 40px 0; }.heroGrid,.scopeGrid,.legalCards,.contents { grid-template-columns: 1fr; }.heroGrid { gap: 36px; }.lead { font-size: 18px; }.scopeGrid { gap: 20px; }.legalCards > a { padding: 24px; }.chatHeader,.chatBody { padding: 18px; }.hero h1 { overflow-wrap: anywhere; }.legal h1 { overflow-wrap: anywhere; } }
+@media(max-width:420px) { .features { grid-template-columns: 1fr; }.demo { display:none; } }

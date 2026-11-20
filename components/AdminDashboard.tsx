@@ -20,6 +20,7 @@ type Device = "desktop" | "tablet" | "mobile";
 
 const pageRoutes: Record<PageKey, string> = {
   home: "/",
+  clinical: "/clinical-assistant-bot",
   growthlab: "/growth-lab",
   soluciones: "/soluciones",
   workspace: "/google-workspace",

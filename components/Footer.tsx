@@ -22,6 +22,7 @@ const groups = [
       ["J R Aprende", "/aprende"],
       ["J R Research", "/research"],
       ["RAMX", "/ramx"],
+      ["Clinical Assistant Bot", "/clinical-assistant-bot"],
       ["J R OS — próximamente", "/soluciones#jr-os"]
     ]
   },

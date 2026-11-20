@@ -36,7 +36,7 @@ export type KnowledgeItem = {
 };
 
 export type ManagedPage = EditablePage & { blocks: CmsBlock[]; visualEdits?: VisualEdits; sectionOrder?: string[]; hiddenSections?: string[] };
-export type PageKey = "home" | "growthlab" | "soluciones" | "workspace" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros" | "contacto";
+export type PageKey = "home" | "clinical" | "growthlab" | "soluciones" | "workspace" | "websites" | "seguros" | "aprende" | "research" | "ramx" | "nosotros" | "contacto";
 
 export type SiteContent = {
   home: ManagedPage;
@@ -69,6 +69,7 @@ export const defaultContent: SiteContent = {
   research: { ...serviceCopy.research, blocks: standardBlocks([["hero", "Investigación que se sostiene", "Orden metodológico para llevar una idea clínica a un protocolo viable."]]) },
   ramx: { title: "Identidad digital que ayuda a proteger a cada mascota.", description: "RAMX conecta el perfil de tu mascota con placas QR, NFC y microchip para reunir identificación, salud y contacto en un solo lugar.", primaryCta: "Conocer RAMX", secondaryCta: "Solicitar información", blocks: standardBlocks([["hero", "Una identidad que acompaña", "Tecnología para proteger la historia de cada mascota."]]) },
   pages: {
+    clinical: { title: "Clinical Assistant Bot", description: "Recepción por WhatsApp para conectar consultas, agenda y atención humana. Conoce el proyecto de J R Consulting y su demostración Benson para J R Dental.", primaryCta: "Solicitar información", secondaryCta: "Privacidad y términos", blocks: [] },
     growthlab: { title: "Haz que tu marketing deje de ser publicaciones sueltas y se convierta en un sistema.", description: "J R Consulting — Growth Lab conecta marketing, web, WhatsApp, CRM, automatización, datos e inteligencia artificial para atraer oportunidades, darles seguimiento y medir qué funciona.", primaryCta: "Solicitar auditoría", secondaryCta: "Ver Agenda Local OS", blocks: [] },
     soluciones: { title: "Soluciones que hacen que tu negocio avance.", description: "Estrategia, presencia digital y sistemas para convertir el trabajo diario en progreso medible.", primaryCta: "Hablar de mi negocio", secondaryCta: "Ver servicios", blocks: standardBlocks([["services", "Soluciones estratégicas", "Construimos sistemas claros para crecer con dirección."]]) },
     workspace: {
@@ -101,6 +102,7 @@ export const defaultContent: SiteContent = {
 
 export const editablePageLabels: Record<PageKey, string> = {
   home: "Inicio",
+  clinical: "Clinical Assistant Bot",
   growthlab: "Growth Lab",
   soluciones: "Soluciones",
   workspace: "Google Workspace",
@@ -156,6 +158,7 @@ export function mergeSiteContent(value: unknown): SiteContent {
   return {
     home: mergePage(defaultContent.home, incoming.home), aprende: mergePage(defaultContent.aprende, incoming.aprende), research: upgradeServiceCopy("research", mergePage(defaultContent.research, incoming.research)), ramx: mergePage(defaultContent.ramx, incoming.ramx),
     pages: {
+      clinical: mergePage(defaultContent.pages.clinical, incoming.pages?.clinical),
       growthlab: mergePage(defaultContent.pages.growthlab, incoming.pages?.growthlab),
       soluciones: mergePage(defaultContent.pages.soluciones, incoming.pages?.soluciones),
       workspace: mergePage(defaultContent.pages.workspace, incoming.pages?.workspace),
