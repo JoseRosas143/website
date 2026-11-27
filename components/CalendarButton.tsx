@@ -36,7 +36,7 @@ const loaded = new Promise<void>((resolve) => {
 export function CalendarButton({
   url,
   label = "Programar una cita",
-  color = "#0AAFB0"
+  color = "#8236BC"
 }: {
   url: string;
   label?: string;

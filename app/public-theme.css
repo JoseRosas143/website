@@ -219,3 +219,9 @@ body:not(:has(.admin-route)) {
     .learning-path-mini i { display: none; }
   }
 }
+body:not(:has(.admin-route)) .calendar-button-wrap .qxCTlb {
+  border-radius: 100px !important;
+  background: linear-gradient(120deg, #a14ce2, #7026be) !important;
+  color: white !important;
+  border: 1px solid #b16bee;
+}
