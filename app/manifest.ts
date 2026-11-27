@@ -7,9 +7,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Estrategia, tecnología y conocimiento para crecer con dirección.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#ffffff",
+    background_color: "#0d0b14",
+    theme_color: "#0d0b14",
     lang: "es-MX",
-    icons: [{ src: "/brand/jr-consulting.jpg", sizes: "1280x1280", type: "image/jpeg", purpose: "any" }]
+    icons: [{ src: "/brand/jr-consulting.png", sizes: "942x942", type: "image/png", purpose: "any" }]
   };
 }

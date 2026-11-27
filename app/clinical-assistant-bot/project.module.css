@@ -48,3 +48,22 @@
 @media(max-width:1000px) { .heroGrid { gap: 32px; }.features { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:700px) { .hero { padding: 40px 0; }.heroGrid,.scopeGrid,.legalCards,.contents { grid-template-columns: 1fr; }.heroGrid { gap: 36px; }.lead { font-size: 18px; }.scopeGrid { gap: 20px; }.legalCards > a { padding: 24px; }.chatHeader,.chatBody { padding: 18px; }.hero h1 { overflow-wrap: anywhere; }.legal h1 { overflow-wrap: anywhere; } }
 @media(max-width:420px) { .features { grid-template-columns: 1fr; }.demo { display:none; } }
+/* Shared palette keeps the project demo and legal documents aligned with the site. */
+.project { color: var(--ink); }
+.hero { background: radial-gradient(ellipse at 85% 30%, #63348a30, transparent 65%), var(--paper); }
+.lead, .caption, .features p, .legalCards p, .legal section p, .chatDisclaimer { color: var(--muted); }
+.conversation { background: #16101f; border-color: #583a70; box-shadow: 0 22px 70px #652c9e25; }
+.chatHeader, .scope { background: #241633; }
+.chatHeader div span, .scope p { color: #cbbbd8; }
+.demo { border-color: #8f65ad; }
+.chatBody { background: #100c18; }
+.bubble { background: #241a30; border-color: #493158; }
+.patient { background: #4c286c; }
+.chatOptions span { background: #2d1b3f; color: #ddbcff; border-color: #6f478b; }
+.features article { border-color: #5e3c79; }
+.features svg, .scope :global(.label), .legalCards span { color: var(--aqua); }
+.legalCards > a { background: linear-gradient(140deg, #281b39, #140f1d); border-color: #503462; }
+.legalCards > a:hover { background: #2b1b3e; border-color: #b17ae0; }
+.contents { background: #21162e; }
+.legalEnd { border-color: var(--line); }
+.project a:focus-visible, .legal a:focus-visible { outline-color: #d5afff; }

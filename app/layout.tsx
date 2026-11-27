@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { BlogPromotion } from "@/components/BlogPromotion";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./public-theme.css";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
 import { AiConcierge } from "@/components/AiConcierge";
@@ -15,11 +16,11 @@ export const metadata: Metadata = {
   authors: [{ name: "J R Consulting" }],
   creator: "J R Consulting",
   category: "Consultoría empresarial",
-  icons: { icon: [{ url: "/icon.jpg", type: "image/jpeg" }], shortcut: "/icon.jpg", apple: "/brand/jr-consulting.jpg" },
+  icons: { icon: [{ url: "/icon.png", type: "image/png" }], shortcut: "/icon.png", apple: "/brand/jr-consulting.png" },
   manifest: "/manifest.webmanifest"
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff", colorScheme: "light" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0d0b14", colorScheme: "dark light" };
 
 const structuredData = {
   "@context": "https://schema.org",

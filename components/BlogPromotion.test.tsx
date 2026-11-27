@@ -17,7 +17,7 @@ describe("promoción del blog",()=>{
   pathname='/blog/uno'; render(<BlogPromotionCards posts={publishedTeasers([post('uno'),post('dos')])}/>);
   expect(screen.queryByText('Entrada uno')).toBeNull();
   expect(screen.getByRole('link',{name:/Entrada dos/})).toHaveAttribute('href','/blog/dos');
-  expect(document.querySelector('img')).toHaveAttribute('src','/brand/jr-consulting.jpg');
+  expect(document.querySelector('img')).toHaveAttribute('src','/brand/jr-consulting.png');
  });
  it("no muestra promoción en administración",()=>{
   pathname='/admin'; const {container}=render(<BlogPromotionCards posts={publishedTeasers([post('uno')])}/>);
